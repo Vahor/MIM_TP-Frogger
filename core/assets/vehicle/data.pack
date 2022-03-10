@@ -1,0 +1,40 @@
+vehicle.pack.png
+size: 849, 69
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0
+  rotate: false
+  xy: 0, 0
+  size: 283, 64
+  orig: 283, 64
+  offset: 0, 0
+  index: 0
+1
+  rotate: false
+  xy: 283, 0
+  size: 176, 64
+  orig: 176, 64
+  offset: 0, 0
+  index: 0
+2
+  rotate: false
+  xy: 459, 0
+  size: 132, 69
+  orig: 132, 69
+  offset: 0, 0
+  index: 0
+3
+  rotate: false
+  xy: 591, 0
+  size: 125, 67
+  orig: 125, 67
+  offset: 0, 0
+  index: 0
+4
+  rotate: false
+  xy: 716, 0
+  size: 133, 69
+  orig: 133, 69
+  offset: 0, 0
+  index: 0
