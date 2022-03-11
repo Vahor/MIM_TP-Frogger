@@ -8,7 +8,7 @@ public class Vehicle extends MovingEntity {
         RED(0,3.5f),
         GRAY(1,2),
         YELLOW(2,1.5f),
-        BLUE(3,1.8f),
+        BLUE(3,1.5f),
         GREEN(4,1.3f),
         ;
 

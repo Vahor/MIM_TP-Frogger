@@ -27,7 +27,7 @@ public class World {
             System.out.println("vehicle.getX() = " + vehicle.getX());
             if (SHARED_RANDOM.nextInt(2) == 0) {
                 addVehicle(i,
-                        vehicle.getX() - SHARED_RANDOM.nextInt((int) WorldRenderer.CAMERA_WIDTH) - 3, // 3 = la taille max d'un vehicule, pour éviter de superposer
+                        vehicle.getX() - SHARED_RANDOM.nextInt((int) WorldRenderer.CAMERA_WIDTH - 3) - 3, // 3 = la taille max d'un vehicule, pour éviter de superposer
                         null,
                         vehicle.getFacingDirection() == Direction.RIGHT);
             }

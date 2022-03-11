@@ -19,6 +19,7 @@ public class WorldRenderer extends Controller {
     public static final float CAMERA_WIDTH = 8.5f; // columns
     public static final float CAMERA_HEIGHT = 13.5f; // rows
 
+    // todo remplacer par JUMP_FRAME_DURATION dans le Frogger
     public static final float FRAME_DURATION = .1f; // Temps d'affichage d'une frame, le jeu est à 60 fps, donc frame duration = x/60
 
     OrthographicCamera camera;
@@ -43,13 +44,15 @@ public class WorldRenderer extends Controller {
 
     private void draw(TextureRegion region, float x, float y, float width, float height, float rotation) {
 
+        float realWidth = width * pixelsPerUnitX;
+        float realHeight = height * pixelsPerUnitY;
         batch.draw(region,
                 x * pixelsPerUnitX,
                 y * pixelsPerUnitY,
-                region.getRegionWidth() / 2f,
-                region.getRegionHeight() / 2f,
-                width * pixelsPerUnitX,
-                height * pixelsPerUnitY,
+                realWidth / 2f,
+                realHeight / 2f,
+                realWidth,
+                realHeight,
                 1,
                 1,
                 rotation
@@ -101,8 +104,8 @@ public class WorldRenderer extends Controller {
                 vehicle.getY() + .1f, // Offset 1.1f
                 vehicle.getWidth(),
                 vehicle.getHeight(),
-                0
-                //vehicle.getFacingDirection().getRotation()
+                //0
+                vehicle.getFacingDirection().getRotation()
         );
     }
 
@@ -118,7 +121,6 @@ public class WorldRenderer extends Controller {
 
     @Override
     public void update(float delta) {
-//        camera.update();
 //        batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
