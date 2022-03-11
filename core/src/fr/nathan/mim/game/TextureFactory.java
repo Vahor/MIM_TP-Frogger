@@ -80,7 +80,7 @@ public class TextureFactory {
     }
 
     public TextureAtlas getTreeAtlas() {
-        return treesAtlas;
+        return treeAtlas;
     }
 
     public TextureRegion getIdleFly() {

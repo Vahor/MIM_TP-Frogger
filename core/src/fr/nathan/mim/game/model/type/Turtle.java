@@ -13,11 +13,10 @@ public class Turtle extends MovingEntity {
     private transient State state = State.MOVE;
     private transient float stateTime = 0;
 
-    private float respawnDelay;
-    private float maxRideTime;
+    private float respawnDelay = 3;
+    private float maxRideTime = 2;
 
     private float currentRideTime = 0;
-
 
     public Turtle() {
         onSpawnEnd();
@@ -66,6 +65,8 @@ public class Turtle extends MovingEntity {
             frogger.getVelocity().set(0, 0);
             currentRideTime = 0;
         }
+
+        // todo reset currentRideTime lorsqu'on n'est plus dessus
 
         return false;
     }

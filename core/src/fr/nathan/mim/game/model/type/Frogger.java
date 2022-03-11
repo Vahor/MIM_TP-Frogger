@@ -15,7 +15,7 @@ public class Frogger extends MovingEntity {
 
     private transient boolean canJump = true;
 
-    private float jumpDelay;
+    private float jumpDelay = 0.1f;
 
     @Override
     public boolean onCollide(Frogger frogger, float delta) {
@@ -37,6 +37,13 @@ public class Frogger extends MovingEntity {
     public void update(float delta) {
         super.update(delta);
         stateTime += delta;
+    }
+
+    @Override
+    public void whenOutOfBorder() {
+        super.whenOutOfBorder();
+        // todo gerer les bordures pour pas que la grenouille sorte du cadre
+        //  Avec les flèches + lorsqu'on est sur une tortur/arbre
     }
 
     public void onJumpEnd() {

@@ -76,6 +76,6 @@ public class Vehicle extends MovingEntity {
     @Override
     public void write(Json json) {
         super.write(json);
-        json.writeValue("vehicleType", type);
+        json.writeValue("type", type);
     }
 }

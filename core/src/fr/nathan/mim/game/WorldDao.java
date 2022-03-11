@@ -20,6 +20,7 @@ public class WorldDao {
         parser.addClassTag("Vehicle", Vehicle.class);
         parser.addClassTag("Frogger", Frogger.class);
         parser.addClassTag("Turtle", Turtle.class);
+        parser.addClassTag("Tree", Tree.class);
     }
 
     public World get(String path) {

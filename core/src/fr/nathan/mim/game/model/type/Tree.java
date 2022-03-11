@@ -20,9 +20,17 @@ public class Tree extends MovingEntity {
             this.id   = id;
             this.width = width;
         }
+
+        public int getId() {
+            return id;
+        }
     }
 
-    private Type type;
+    private Type type = Type.SMALL;
+
+    public Type getType() {
+        return type;
+    }
 
     @Override
     public float getWidth() {
@@ -35,8 +43,15 @@ public class Tree extends MovingEntity {
     }
 
     @Override
+    public void afterDeserialization() {
+        super.afterDeserialization();
+        updateVelocity();
+    }
+
+    @Override
     public boolean onCollide(Frogger frogger, float delta) {
-        System.out.println("Tree.onCollide");
+
+        frogger.getVelocity().set(getVelocity());
         return false;
     }
 

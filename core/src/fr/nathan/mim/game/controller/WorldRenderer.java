@@ -96,10 +96,9 @@ public class WorldRenderer extends Controller {
         TextureRegion region = TextureFactory.getInstance().getVehicleAtlas().findRegion(Integer.toString(vehicle.getVehicleType().getId()));
         draw(region,
                 vehicle.getX(),
-                vehicle.getY(), // Offset 1.1f
+                vehicle.getY(),
                 vehicle.getWidth(),
                 vehicle.getHeight(),
-                //0
                 vehicle.getFacingDirection().getRotation()
         );
     }
@@ -108,7 +107,7 @@ public class WorldRenderer extends Controller {
         TextureRegion region = TextureFactory.getInstance().getIdleFly();
         draw(region,
                 fly.getX(),
-                fly.getY(), // Offset 1.1f
+                fly.getY(),
                 fly.getWidth(),
                 fly.getHeight(),
                 0
@@ -149,10 +148,10 @@ public class WorldRenderer extends Controller {
     }
 
     public void drawTree(Tree tree) {
-        TextureRegion region = TextureFactory.getInstance().getIdleFly();
+        TextureRegion region = TextureFactory.getInstance().getTreeAtlas().findRegion(Integer.toString(tree.getType().getId()));
         draw(region,
                 tree.getX(),
-                tree.getY(), // Offset 1.1f
+                tree.getY(),
                 tree.getWidth(),
                 tree.getHeight(),
                 tree.getFacingDirection().getRotation()
@@ -181,8 +180,8 @@ public class WorldRenderer extends Controller {
         batch.begin();
 
         drawBackground();
-        drawFrogger();
         drawElements();
+        drawFrogger();
 
         batch.end();
     }

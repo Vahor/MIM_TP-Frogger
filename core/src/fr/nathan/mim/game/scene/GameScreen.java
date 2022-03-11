@@ -23,7 +23,6 @@ public class GameScreen implements Screen, InputProcessor {
         //world.demoWorld();
         world = worldDao.get("test2.json");
         worldDao.save("test2.json", world);
-        worldDao.save("testttttt.json", world);
 
         worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world);

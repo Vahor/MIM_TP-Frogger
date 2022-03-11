@@ -114,7 +114,6 @@ public class WorldController extends Controller {
                 boolean dying = element.onCollide(frogger, delta);
                 if (dying) {
                     System.out.println(":(");
-                    //frogger.setState(Frogger.State.DYING);
                 }
                 return;
             }
@@ -128,6 +127,7 @@ public class WorldController extends Controller {
                 frogger.getWidth(),
                 frogger.getHeight()
         );
+
         if(intersectsWithWater) {
             System.out.println("sad water :(");
         }

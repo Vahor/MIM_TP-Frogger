@@ -5,9 +5,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import fr.nathan.mim.game.model.type.Frogger;
 
-public abstract class GameElement implements Json.Serializable{
+public abstract class GameElement implements Json.Serializable {
 
-    protected final Vector2 position = new Vector2();
+    protected final Vector2 position = new Vector2(0, 0);
 
     abstract public float getWidth();
     abstract public float getHeight();
@@ -30,8 +30,7 @@ public abstract class GameElement implements Json.Serializable{
                 getY() < other.getY() + other.getHeight() && getY() + getHeight() > other.getY();
     }
 
-    public void update(float delta) {
-    }
+    public void update(float delta)    {}
 
     public void afterDeserialization() {}
 

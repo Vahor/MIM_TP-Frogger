@@ -5,8 +5,8 @@ import fr.nathan.mim.game.model.GameElement;
 
 public class Fly extends GameElement {
 
-    private float[] availableSpots;
-    private float changeSpotDelay = 0;
+    private float[] availableSpots = new float[]{0, 2, 4, 8};
+    private float changeSpotDelay = 5;
 
     private transient float stateTime = 0;
 
@@ -34,7 +34,7 @@ public class Fly extends GameElement {
         stateTime += delta;
         if (changeSpotDelay > 0 && stateTime > changeSpotDelay) {
             getPosition().x = availableSpots[World.SHARED_RANDOM.nextInt(availableSpots.length)];
-            stateTime = 0;
+            stateTime       = 0;
         }
     }
 

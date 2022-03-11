@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
+import fr.nathan.mim.game.model.MovingEntity;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ public class World {
         elements = new HashSet<GameElement>();
         frogger  = new Frogger();
         frogger.getPosition().set(4, .20f);
+        frogger.setFacingDirection(Direction.UP);
 
         for (int i = 1; i < 6; i++) {
             Vehicle vehicle = addVehicle(i,
@@ -41,10 +43,20 @@ public class World {
         }
 
         for (int i = 7; i < 12; i++) {
-            Turtle turtle = new Turtle();
-            turtle.getPosition().set(0, i + .1f);
-            turtle.setFacingDirection(SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT);
-            elements.add(turtle);
+            MovingEntity entity;
+            int offsetY = 0;
+            if (SHARED_RANDOM.nextBoolean()) {
+                entity = new Turtle();
+                offsetY = 0;
+            }
+            else {
+                entity = new Tree();
+                offsetY = 5;
+            }
+
+            entity.getPosition().set(offsetY, i + .1f);
+            entity.setFacingDirection(SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT);
+            elements.add(entity);
         }
 
         Fly fly = new Fly();
