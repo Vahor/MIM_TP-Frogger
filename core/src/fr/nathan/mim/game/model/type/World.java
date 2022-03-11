@@ -1,66 +1,83 @@
 package fr.nathan.mim.game.model.type;
 
+import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
 
-import java.util.HashMap;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class World {
 
-    private final Frogger frogger;
-    private final HashMap<Integer, Set<GameElement>> elementsByRow = new HashMap<Integer, Set<GameElement>>(5);
+    private Frogger frogger;
+    private Set<GameElement> elements;
     public static Random SHARED_RANDOM = new Random();
 
+    public Rectangle waterArea;
+
+    public static final Timer TIMER = new Timer();
+
     public World() {
-        frogger = new Frogger();
+    }
+
+    public void demoWorld() {
+        elements = new HashSet<GameElement>();
+        frogger  = new Frogger();
         frogger.getPosition().set(4, .20f);
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 1; i < 6; i++) {
             Vehicle vehicle = addVehicle(i,
                     SHARED_RANDOM.nextFloat() * WorldRenderer.CAMERA_WIDTH,
-                    null,
                     SHARED_RANDOM.nextBoolean());
-            System.out.println("vehicle.getX() = " + vehicle.getX());
+
             if (SHARED_RANDOM.nextInt(2) == 0) {
                 addVehicle(i,
-                        vehicle.getX() - SHARED_RANDOM.nextInt((int) WorldRenderer.CAMERA_WIDTH - 3) - 3, // 3 = la taille max d'un vehicule, pour éviter de superposer
-                        null,
+                        vehicle.getX() - SHARED_RANDOM.nextInt((int) WorldRenderer.CAMERA_WIDTH - 4) - 3, // 3 = la taille max d'un vehicule, pour éviter de superposer
                         vehicle.getFacingDirection() == Direction.RIGHT);
             }
         }
-    }
 
-    private Vehicle addVehicle(int row, float initialX, Vehicle.VehicleType initialVehicleType, boolean lookingRight) {
-        if (!elementsByRow.containsKey(row)) {
-            elementsByRow.put(row, new HashSet<GameElement>(2, 1));
+        for (int i = 7; i < 12; i++) {
+            Turtle turtle = new Turtle();
+            turtle.getPosition().set(0, i + .1f);
+            turtle.setFacingDirection(SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT);
+            elements.add(turtle);
         }
 
-        Vehicle vehicle = new Vehicle(initialVehicleType);
-        vehicle.getPosition().set(initialX, row + 1);
-        vehicle.setFacingDirection(lookingRight ? Direction.RIGHT : Direction.LEFT);
-        vehicle.getVelocity().set(
-                vehicle.getFacingDirection().getMotX() * vehicle.getSpeed(),
-                vehicle.getFacingDirection().getMotY() * vehicle.getSpeed()
-        );
+        Fly fly = new Fly();
+        fly.getPosition().set(.3f, 12.25f);
+        elements.add(fly);
 
-        elementsByRow.get(row).add(vehicle);
-
-        return vehicle;
+        waterArea = new Rectangle();
+        waterArea.add(0, 0);
+        waterArea.add(0, 4);
+        waterArea.add(13, 0);
+        waterArea.add(13, 4);
+        waterArea.setLocation(0, 8);
     }
 
-    public Set<GameElement> getElementsInRow(int row) {
-        return elementsByRow.get(row);
+    private Vehicle addVehicle(int row, float initialX, boolean lookingRight) {
+        Vehicle vehicle = new Vehicle();
+        vehicle.getPosition().set(initialX, row + .1f);
+        vehicle.setFacingDirection(lookingRight ? Direction.RIGHT : Direction.LEFT);
+
+        elements.add(vehicle);
+
+        return vehicle;
     }
 
     public Frogger getFrogger() {
         return frogger;
     }
 
-    public HashMap<Integer, Set<GameElement>> getElementsByRow() {
-        return elementsByRow;
+    public Rectangle getWaterArea() {
+        return waterArea;
+    }
+
+    public Set<GameElement> getElements() {
+        return elements;
     }
 }

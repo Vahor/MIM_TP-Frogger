@@ -9,7 +9,6 @@ import fr.nathan.mim.game.model.type.World;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class WorldController extends Controller {
 
@@ -90,11 +89,14 @@ public class WorldController extends Controller {
             return;
         }
 
-        float animationDuration = TextureFactory.getInstance().getJumpingFrogger().getAnimationDuration();
+        if(frogger.canJump()) {
+            float animationDuration = TextureFactory.getInstance().getJumpingFrogger().getAnimationDuration();
 
-        frogger.setState(Frogger.State.JUMPING);
-        frogger.getVelocity().x += frogger.getFacingDirection().getMotX() * (frogger.getSpeed() / animationDuration);
-        frogger.getVelocity().y += frogger.getFacingDirection().getMotY() * (frogger.getSpeed() / animationDuration);
+            frogger.setState(Frogger.State.JUMPING);
+            frogger.getVelocity().x = frogger.getFacingDirection().getMotX() * (frogger.getSpeed() / animationDuration);
+            frogger.getVelocity().y = frogger.getFacingDirection().getMotY() * (frogger.getSpeed() / animationDuration);
+            frogger.onJumpStart();
+        }
     }
 
     private void handleBorders(MovingEntity element) {
@@ -105,16 +107,29 @@ public class WorldController extends Controller {
         }
     }
 
-    private void handleCollisions() {
-
-        int y = Math.round(world.getFrogger().getY());
-        Set<GameElement> elementsInRow = world.getElementsInRow(y - 1);
-        if (elementsInRow == null) return;
-
-        for (GameElement gameElement : elementsInRow) {
-            if (gameElement.collideWith(frogger)) {
-                gameElement.onCollide();
+    private void handleCollisions(float delta) {
+        if (frogger.getState() != Frogger.State.IDLE) return;
+        for (GameElement element : world.getElements()) {
+            if (element.collideWith(frogger)) {
+                boolean dying = element.onCollide(frogger, delta);
+                if (dying) {
+                    System.out.println(":(");
+                    //frogger.setState(Frogger.State.DYING);
+                }
+                return;
             }
+        }
+
+        // Handle water
+
+        boolean intersectsWithWater = world.getWaterArea().intersects(
+                frogger.getX(),
+                frogger.getY(),
+                frogger.getWidth(),
+                frogger.getHeight()
+        );
+        if(intersectsWithWater) {
+            System.out.println("sad water :(");
         }
 
     }
@@ -123,15 +138,14 @@ public class WorldController extends Controller {
     public void update(float delta) {
         handleInput();
 
-        for (Set<GameElement> value : world.getElementsByRow().values()) {
-            for (GameElement element : value) {
-                element.update(delta);
-                if (element instanceof MovingEntity) {
-                    handleBorders((MovingEntity) element);
-                }
+        for (GameElement element : world.getElements()) {
+            element.update(delta);
+            if (element instanceof MovingEntity) {
+                handleBorders((MovingEntity) element);
             }
         }
-        handleCollisions();
+
+        handleCollisions(delta);
 
         frogger.update(delta);
     }

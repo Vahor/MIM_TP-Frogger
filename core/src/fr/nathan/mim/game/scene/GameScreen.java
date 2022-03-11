@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import fr.nathan.mim.game.WorldDao;
 import fr.nathan.mim.game.controller.WorldController;
 import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.type.World;
@@ -16,7 +17,14 @@ public class GameScreen implements Screen, InputProcessor {
     private final WorldRenderer worldRenderer;
 
     public GameScreen(Batch batch) {
-        World world = new World();
+        WorldDao worldDao = new WorldDao();
+        World world;
+        //world = new World();
+        //world.demoWorld();
+        world = worldDao.get("test2.json");
+        worldDao.save("test2.json", world);
+        worldDao.save("testttttt.json", world);
+
         worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world);
 

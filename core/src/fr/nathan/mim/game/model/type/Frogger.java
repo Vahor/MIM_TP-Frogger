@@ -1,5 +1,7 @@
 package fr.nathan.mim.game.model.type;
 
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Frogger extends MovingEntity {
@@ -8,18 +10,24 @@ public class Frogger extends MovingEntity {
         IDLE, JUMPING, DYING
     }
 
-    private State state = State.IDLE;
-    private float stateTime = 0;
+    private transient State state = State.IDLE;
+    private transient float stateTime = 0;
 
-    public Frogger() {
-    }
+    private transient boolean canJump = true;
+
+    private float jumpDelay;
 
     @Override
-    public boolean onCollide() {
+    public boolean onCollide(Frogger frogger, float delta) {
         return false;
     }
 
     public State getState() {return state;}
+
+    public boolean canJump() {
+        return canJump && state == State.IDLE;
+    }
+
     public void setState(State state) {
         this.state = state;
         stateTime  = 0;
@@ -31,23 +39,38 @@ public class Frogger extends MovingEntity {
         stateTime += delta;
     }
 
+    public void onJumpEnd() {
+        setState(Frogger.State.IDLE);
+        if (jumpDelay > 0) {
+            World.TIMER.scheduleTask(new Timer.Task() {
+                @Override
+                public void run() {
+                    canJump = true;
+                }
+            }, jumpDelay);
+        }
+        else {
+            canJump = true;
+        }
+        getVelocity().set(0, 0);
+    }
+
+    public void onJumpStart() {
+        canJump = false;
+    }
+
     public float getStateTime() {
         return stateTime;
     }
 
     @Override
-    public float getSpeed() {
-        return 1;
-    }
-
-    @Override
     public float getWidth() {
-        return .8f;
+        return .7f;
     }
 
     @Override
     public float getHeight() {
-        return .8f;
+        return .7f;
     }
 
     @Override
@@ -56,5 +79,11 @@ public class Frogger extends MovingEntity {
                 "state=" + state +
                 ", super=" + super.toString() +
                 '}';
+    }
+
+    @Override
+    public void write(Json json) {
+        super.write(json);
+        json.writeValue("jumpDelay", jumpDelay);
     }
 }

@@ -1,22 +1,23 @@
 package fr.nathan.mim.game.model.type;
 
+import com.badlogic.gdx.utils.Json;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Vehicle extends MovingEntity {
 
-    public enum VehicleType {
-        RED(0,3.5f),
-        GRAY(1,2),
-        YELLOW(2,1.5f),
-        BLUE(3,1.5f),
-        GREEN(4,1.3f),
+    public enum Type {
+        RED(0, 3.5f),
+        GRAY(1, 2),
+        YELLOW(2, 1.5f),
+        BLUE(3, 1.5f),
+        GREEN(4, 1.3f),
         ;
 
         private final int id;
         private final float width;
-        private static final VehicleType[] values = values();
+        private static final Type[] values = values();
 
-        VehicleType(int id, float width) {
+        Type(int id, float width) {
             this.id    = id;
             this.width = width;
         }
@@ -26,18 +27,11 @@ public class Vehicle extends MovingEntity {
         }
     }
 
-    private VehicleType vehicleType;
-
-    public Vehicle(VehicleType vehicleType) {
-
-        if (vehicleType == null)
-            vehicleType = VehicleType.values[World.SHARED_RANDOM.nextInt(VehicleType.values.length)];
-        setVehicleType(vehicleType);
-    }
+    private Type type = Type.RED;
 
     @Override
     public void whenOutOfBorder() {
-        setVehicleType(VehicleType.values[World.SHARED_RANDOM.nextInt(VehicleType.values.length)]);
+        setVehicleType(Type.values[World.SHARED_RANDOM.nextInt(Type.values.length)]);
         super.whenOutOfBorder();
     }
 
@@ -48,34 +42,40 @@ public class Vehicle extends MovingEntity {
 
     @Override
     public float getWidth() {
-        return vehicleType.width;
+        return type.width;
     }
 
     @Override
-    public float getSpeed() {
-        return 1.1f;
-    }
-
-    @Override
-    public boolean onCollide() {
+    public boolean onCollide(Frogger frogger, float delta) {
         System.out.println("Vehicle.onCollide");
-        position.y = 8;
         return true;
     }
 
-    private void setVehicleType(VehicleType vehicleType) {
-        this.vehicleType = vehicleType;
+    private void setVehicleType(Type type) {
+        this.type = type;
     }
 
-    public VehicleType getVehicleType() {
-        return vehicleType;
+    public Type getVehicleType() {
+        return type;
+    }
+
+    @Override
+    public void afterDeserialization() {
+        super.afterDeserialization();
+        updateVelocity();
     }
 
     @Override
     public String toString() {
         return "Vehicle{" +
-                "vehicleType=" + vehicleType +
+                "vehicleType=" + type +
                 ", super=" + super.toString() +
                 '}';
+    }
+
+    @Override
+    public void write(Json json) {
+        super.write(json);
+        json.writeValue("vehicleType", type);
     }
 }
