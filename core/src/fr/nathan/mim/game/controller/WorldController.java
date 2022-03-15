@@ -7,6 +7,7 @@ import fr.nathan.mim.game.model.MovingEntity;
 import fr.nathan.mim.game.model.type.Frogger;
 import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
+import fr.nathan.mim.game.texture.type.FroggerTexture;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,7 +92,7 @@ public class WorldController extends Controller {
         }
 
         if (frogger.canJump()) {
-            float animationDuration = TextureFactory.getInstance().getJumpingFrogger().getAnimationDuration();
+            float animationDuration = ((FroggerTexture) TextureFactory.getInstance().getTextureHolder(Frogger.class)).getJumpingAnimation().getAnimationDuration();
 
             frogger.setState(Frogger.State.JUMPING);
             frogger.getVelocity().x = frogger.getDirection().getMotX() * (frogger.getJumpDistance() / animationDuration);

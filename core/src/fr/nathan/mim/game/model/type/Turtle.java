@@ -1,7 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
 import com.badlogic.gdx.utils.Timer;
-import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Turtle extends MovingEntity {

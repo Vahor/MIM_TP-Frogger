@@ -30,7 +30,7 @@ public class Vehicle extends MovingEntity {
 
     @Override
     public void whenOutOfBorder() {
-        setVehicleType(Type.values[World.SHARED_RANDOM.nextInt(Type.values.length)]);
+        setType(Type.values[World.SHARED_RANDOM.nextInt(Type.values.length)]);
         super.whenOutOfBorder();
     }
 
@@ -50,11 +50,11 @@ public class Vehicle extends MovingEntity {
         return true;
     }
 
-    private void setVehicleType(Type type) {
+    private void setType(Type type) {
         this.type = type;
     }
 
-    public Type getVehicleType() {
+    public Type getType() {
         return type;
     }
 

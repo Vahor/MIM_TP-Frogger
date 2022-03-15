@@ -6,6 +6,7 @@ import fr.nathan.mim.game.config.Configurable;
 import fr.nathan.mim.game.config.FlyConfiguration;
 import fr.nathan.mim.game.config.FroggerConfiguration;
 import fr.nathan.mim.game.config.TurtleConfiguration;
+import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
@@ -40,6 +41,7 @@ public class World implements Configurable {
     public Set<GameElement> getElements() {
         return elements;
     }
+
     @Override
     public void afterDeserialization() {
         SHARED_RANDOM = new Random(seed);
@@ -78,7 +80,7 @@ public class World implements Configurable {
 
         }
 
-        frogger = new Frogger(froggerConfiguration.getJumpDelay(), froggerConfiguration.getJumpDistance());
+        frogger = new Frogger(froggerConfiguration.getJumpDelay(), froggerConfiguration.getJumpDistance(), froggerConfiguration.getAnimationDuration());
 
         elements.add(new Fly(flyConfiguration.getChangeSpotDelay(), flyConfiguration.getStayOnSportDelay()));
 
@@ -95,12 +97,12 @@ public class World implements Configurable {
 
     public void demoWorld() {
 
-        froggerConfiguration = new FroggerConfiguration(.1f, 1);
+        froggerConfiguration = new FroggerConfiguration(.1f, 1, 7);
         turtleConfiguration  = new TurtleConfiguration(3, 3f);
         flyConfiguration     = new FlyConfiguration(3, 3f);
 
         roads   = new HashSet<Road>();
-        frogger = new Frogger(.1f, 1);
+        frogger = new Frogger(.1f, 1, WorldRenderer.FRAME_DURATION * 6);
         frogger.getPosition().set(4, .20f);
 
         for (int i = 1; i < 6; i++) {

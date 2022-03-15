@@ -1,14 +1,15 @@
 package fr.nathan.mim.game.controller;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.model.GameElement;
-import fr.nathan.mim.game.model.type.*;
+import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.Road;
+import fr.nathan.mim.game.model.type.World;
+import fr.nathan.mim.game.texture.TextureFactory;
 
 public class WorldRenderer extends Controller {
 
@@ -38,23 +39,6 @@ public class WorldRenderer extends Controller {
         pixelsPerUnitY = camera.viewportHeight / CAMERA_HEIGHT;
     }
 
-    private void draw(TextureRegion region, float x, float y, float width, float height, float rotation) {
-
-        float realWidth = width * pixelsPerUnitX;
-        float realHeight = height * pixelsPerUnitY;
-        batch.draw(region,
-                x * pixelsPerUnitX,
-                y * pixelsPerUnitY,
-                realWidth / 2f,
-                realHeight / 2f,
-                realWidth,
-                realHeight,
-                1,
-                1,
-                rotation
-        );
-    }
-
     public void drawBackground() {
         batch.draw(
                 TextureFactory.getInstance().getBackground(),
@@ -65,116 +49,31 @@ public class WorldRenderer extends Controller {
         );
     }
 
-    public void drawFrogger() {
-        Frogger frogger = world.getFrogger();
-        TextureRegion region;
-        if (frogger.getState() == Frogger.State.JUMPING) {
-            Animation<TextureRegion> animation = TextureFactory.getInstance().getJumpingFrogger();
-            region = animation.getKeyFrame(frogger.getStateTime());
-            if (animation.isAnimationFinished(frogger.getStateTime())) {
-                frogger.onJumpEnd();
-            }
-        }
-        else if (frogger.getState() == Frogger.State.IDLE) {
-            region = TextureFactory.getInstance().getIdleFrogger();
-        }
-        else {
+
+    private void draw(GameElement element) {
+        TextureRegion region = TextureFactory.getInstance().getTexture(element);
+        if (region == null) {
+            System.out.println("element = " + element.getClass());
             return;
         }
 
-        draw(region,
-                frogger.getX(),
-                frogger.getY(),
-                frogger.getWidth(),
-                frogger.getHeight(),
-                90 + frogger.getDirection().getRotation()
-        );
-
-    }
-
-    public void drawVehicle(Vehicle vehicle) {
-        TextureRegion region = TextureFactory.getInstance().getVehicleAtlas().findRegion(Integer.toString(vehicle.getVehicleType().getId()));
-        draw(region,
-                vehicle.getX(),
-                vehicle.getRoad().getOffsetY() + vehicle.getY(),
-                vehicle.getWidth(),
-                vehicle.getHeight(),
-                vehicle.getRoad().getDirection().getRotation()
+        float realWidth = element.getWidth() * pixelsPerUnitX;
+        float realHeight = element.getHeight() * pixelsPerUnitY;
+        batch.draw(region,
+                element.getX() * pixelsPerUnitX,
+                element.getYWithRoad() * pixelsPerUnitY,
+                realWidth / 2f,
+                realHeight / 2f,
+                realWidth,
+                realHeight,
+                1,
+                1,
+                element.getDirection().getRotation() + element.getRotationOffset()
         );
     }
 
-    public void drawFly(Fly fly) {
-        TextureRegion region = TextureFactory.getInstance().getIdleFly();
-        draw(region,
-                fly.getX(),
-                fly.getY(),
-                fly.getWidth(),
-                fly.getHeight(),
-                0
-        );
-    }
-
-    public void drawTurtle(Turtle turtle) {
-        TextureRegion region;
-        if (turtle.getState() == Turtle.State.SINK) {
-            Animation<TextureRegion> animation = TextureFactory.getInstance().getSinkingTurtle();
-            region = animation.getKeyFrame(turtle.getStateTime());
-            if (animation.isAnimationFinished(turtle.getStateTime())) {
-                turtle.onSinkEnd();
-            }
-        }
-        else if (turtle.getState() == Turtle.State.MOVE) {
-            Animation<TextureRegion> animation = TextureFactory.getInstance().getMovingTurtle();
-            region = animation.getKeyFrame(turtle.getStateTime());
-        }
-        else if (turtle.getState() == Turtle.State.SPAWN) {
-            Animation<TextureRegion> animation = TextureFactory.getInstance().getSpawningTurtle();
-            region = animation.getKeyFrame(turtle.getStateTime());
-            if (animation.isAnimationFinished(turtle.getStateTime())) {
-                turtle.onSpawnEnd();
-            }
-        }
-        else {
-            return;
-        }
-
-        draw(region,
-                turtle.getX(),
-                turtle.getRoad().getOffsetY() + turtle.getY(),
-                turtle.getWidth(),
-                turtle.getHeight(),
-                turtle.getRoad().getDirection().getRotation()
-        );
-    }
-
-    public void drawTree(Tree tree) {
-        TextureRegion region = TextureFactory.getInstance().getTreeAtlas().findRegion(Integer.toString(tree.getType().getId()));
-        draw(region,
-                tree.getX(),
-                tree.getRoad().getOffsetY() + tree.getY(),
-                tree.getWidth(),
-                tree.getHeight(),
-                tree.getRoad().getDirection().getRotation()
-        );
-    }
-
-    private void draw(GameElement element){
-        System.out.println("element = " + element.getClass());
-    }
-
-    private void drawElement(GameElement element){
+    private void drawElement(GameElement element) {
         draw(element);
-        if (element instanceof Vehicle) {
-            drawVehicle((Vehicle) element);
-        }
-        else if (element instanceof Turtle) {
-            drawTurtle((Turtle) element);
-        }
-        else if (element instanceof Tree) {
-            drawTree((Tree) element);
-        } else if (element instanceof Fly) {
-            drawFly((Fly) element);
-        }
     }
 
     public void drawElements() {
@@ -196,7 +95,8 @@ public class WorldRenderer extends Controller {
 
         drawBackground();
         drawElements();
-        drawFrogger();
+
+        draw(world.getFrogger());
 
         batch.end();
     }

@@ -1,6 +1,5 @@
 package fr.nathan.mim.game.texture;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -8,13 +7,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
+import fr.nathan.mim.game.model.type.*;
+import fr.nathan.mim.game.texture.type.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TextureFactory {
 
-    private Map<Class<? extends GameElement>, TextureHolder<GameElement>> textureMap = new HashMap<Class<? extends GameElement>, TextureHolder<GameElement>>();
+    private final Map<Class<? extends GameElement>, TextureHolder<? extends GameElement>> textureMap = new HashMap<Class<? extends GameElement>, TextureHolder<? extends GameElement>>();
 
     private static TextureFactory instance = null;
 
@@ -26,80 +27,44 @@ public class TextureFactory {
     }
 
     // Frogger
-    private final TextureRegion idleFrogger;
-    private final Animation<TextureRegion> jumpingFrogger;
-
-    // Vehicle
-    private final TextureAtlas vehicleAtlas;
-
-    // Turtle
-    private final Animation<TextureRegion> movingTurtle;
-    private final Animation<TextureRegion> sinkingTurtle;
-    private final Animation<TextureRegion> spawningTurtle;
-
-    // TreeLog
-    private final TextureAtlas treeAtlas;
-
-    // Fly
-    private final TextureRegion idleFly;
 
     private final Texture background;
 
     public TextureFactory() {
-        vehicleAtlas = new TextureAtlas(Gdx.files.internal("vehicle/vehicle.pack"));
-        background   = new Texture(Gdx.files.internal("background.png"));
+        background = new Texture(Gdx.files.internal("background.png"));
 
         // Frogger
-        TextureAtlas froggerAtlas = new TextureAtlas(Gdx.files.internal("frogger/frogger.pack"));
-        idleFrogger    = froggerAtlas.findRegion("idle");
-        jumpingFrogger = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, froggerAtlas.findRegions("jump"), Animation.PlayMode.LOOP);
+        TextureAtlas froggerAtlas = new TextureAtlas(Gdx.files.internal("frogger/frogger.atlas"));
+        textureMap.put(Frogger.class, new FroggerTexture(
+                froggerAtlas.findRegion("idle"),
+                new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, froggerAtlas.findRegions("jump"), Animation.PlayMode.LOOP)
+        ));
 
         // Turtle
         TextureAtlas turtleAtlasMove = new TextureAtlas(Gdx.files.internal("turtle/move/moving.atlas"));
         TextureAtlas turtleAtlasSink = new TextureAtlas(Gdx.files.internal("turtle/sink.atlas")); // todo en faire un seul avec tout
-        movingTurtle   = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasMove.findRegions("move"), Animation.PlayMode.LOOP);
-        sinkingTurtle  = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP);
-        spawningTurtle = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP_REVERSED);
 
-        // TreeLog
-        treeAtlas = new TextureAtlas(Gdx.files.internal("log/log.pack"));
+        textureMap.put(Turtle.class, new TurtleTexture(
+                new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasMove.findRegions("move"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP_REVERSED)
+        ));
 
-        // Fly
-        TextureAtlas flyAtlas = new TextureAtlas(Gdx.files.internal("fly/fly.pack"));
-        idleFly = flyAtlas.findRegion("idle");
-    }
-
-    public TextureRegion getTexture(GameElement model){
-        return textureMap.get(model.getClass()).getTexture(model);
+        textureMap.put(Tree.class, new TreeTexture(new TextureAtlas(Gdx.files.internal("log/log.pack"))));
+        textureMap.put(Vehicle.class, new VehicleTexture(new TextureAtlas(Gdx.files.internal("vehicle/vehicle.pack"))));
+        textureMap.put(Fly.class, new FlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
     }
 
-    public TextureRegion getIdleFrogger() {
-        return idleFrogger;
-    }
-    public Animation<TextureRegion> getJumpingFrogger() {
-        return jumpingFrogger;
-    }
-
-    public Animation<TextureRegion> getMovingTurtle() {
-        return movingTurtle;
-    }
-    public Animation<TextureRegion> getSinkingTurtle() {
-        return sinkingTurtle;
-    }
-    public Animation<TextureRegion> getSpawningTurtle() {
-        return spawningTurtle;
+    @SuppressWarnings("unchecked")
+    public <T extends GameElement> TextureRegion getTexture(T model) {
+        TextureHolder<T> holder = (TextureHolder<T>) textureMap.get(model.getClass());
+        if (holder == null) return null;
+        return holder.getTexture(model);
     }
 
-    public TextureAtlas getTreeAtlas() {
-        return treeAtlas;
-    }
-
-    public TextureRegion getIdleFly() {
-        return idleFly;
-    }
-
-    public TextureAtlas getVehicleAtlas() {
-        return vehicleAtlas;
+    @SuppressWarnings("unchecked")
+    public <T extends GameElement> TextureHolder<T> getTextureHolder(Class<T> clazz) {
+        return (TextureHolder<T>) textureMap.get(clazz);
     }
 
     public Texture getBackground() {

@@ -2,7 +2,6 @@ package fr.nathan.mim.game.model.type;
 
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Frogger extends MovingEntity {
@@ -19,15 +18,21 @@ public class Frogger extends MovingEntity {
 
     private final float jumpDelay;
     private final float jumpDistance;
+    private final float animationDuration;
 
-    public Frogger(float jumpDelay, float jumpDistance) {
-        this.jumpDelay    = jumpDelay;
-        this.jumpDistance = jumpDistance;
+    public Frogger(float jumpDelay, float jumpDistance, float animationDuration) {
+        this.jumpDelay         = jumpDelay;
+        this.jumpDistance      = jumpDistance;
+        this.animationDuration = animationDuration;
     }
 
     @Override
     public boolean onCollideWith(MovingEntity frogger, float delta) {
         return false;
+    }
+
+    public float getAnimationDuration() {
+        return animationDuration;
     }
 
     public State getState() {return state;}
@@ -46,6 +51,11 @@ public class Frogger extends MovingEntity {
 
     public float getJumpDistance() {
         return jumpDistance;
+    }
+
+    @Override
+    public float getYWithRoad() {
+        return getY();
     }
 
     public void setState(State state) {
@@ -100,6 +110,10 @@ public class Frogger extends MovingEntity {
         return .7f;
     }
 
+    @Override
+    public float getRotationOffset() {
+        return 90;
+    }
     @Override
     public String toString() {
         return "Frogger{" +

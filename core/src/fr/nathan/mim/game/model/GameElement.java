@@ -1,6 +1,7 @@
 package fr.nathan.mim.game.model;
 
 import com.badlogic.gdx.math.Vector2;
+import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.Configurable;
 import fr.nathan.mim.game.model.type.Road;
 
@@ -12,6 +13,10 @@ public abstract class GameElement implements Configurable, Collidable {
 
     abstract public float getWidth();
     abstract public float getHeight();
+
+    public Direction getDirection() {
+        return road.getDirection();
+    }
 
     public Vector2 getPosition() {
         return position;
@@ -31,8 +36,11 @@ public abstract class GameElement implements Configurable, Collidable {
         return position.y;
     }
 
+    public float getRotationOffset(){ // todo faire la rotation sur le png directement ?
+        return 0;
+    }
+
     public float getYWithRoad() {
-        if (road == null) return getY();
         return getY() + road.getOffsetY();
     }
 

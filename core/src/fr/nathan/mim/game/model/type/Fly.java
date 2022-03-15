@@ -1,5 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
+import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
@@ -30,13 +31,23 @@ public class Fly extends GameElement {
     }
 
     @Override
+    public float getYWithRoad() {
+        return getY();
+    }
+
+    @Override
+    public Direction getDirection() {
+        return Direction.DOWN;
+    }
+
+    @Override
     public void update(float delta) {
         super.update(delta);
         stateTime += delta;
         if (changeSpotDelay > 0 && stateTime > changeSpotDelay) {
             getPosition().x = World.SHARED_RANDOM.nextFloat() * 8; // todo config
             getPosition().y = World.SHARED_RANDOM.nextInt(13); // todo config
-            stateTime = -stayOnSportDelay;
+            stateTime       = -stayOnSportDelay;
         }
     }
 }
