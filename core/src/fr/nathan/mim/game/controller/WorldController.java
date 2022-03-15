@@ -1,10 +1,11 @@
 package fr.nathan.mim.game.controller;
 
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.TextureFactory;
+import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
 
 import java.util.HashMap;
@@ -74,34 +75,34 @@ public class WorldController extends Controller {
         if (frogger.getState() != Frogger.State.IDLE) return;
 
         if (isLeftPressed()) {
-            frogger.setFacingDirection(Direction.LEFT);
+            frogger.setDirection(Direction.LEFT);
         }
         else if (isRightPressed()) {
-            frogger.setFacingDirection(Direction.RIGHT);
+            frogger.setDirection(Direction.RIGHT);
         }
         else if (isUpPressed()) {
-            frogger.setFacingDirection(Direction.UP);
+            frogger.setDirection(Direction.UP);
         }
         else if (isDownPressed()) {
-            frogger.setFacingDirection(Direction.DOWN);
+            frogger.setDirection(Direction.DOWN);
         }
         else {
             return;
         }
 
-        if(frogger.canJump()) {
+        if (frogger.canJump()) {
             float animationDuration = TextureFactory.getInstance().getJumpingFrogger().getAnimationDuration();
 
             frogger.setState(Frogger.State.JUMPING);
-            frogger.getVelocity().x = frogger.getFacingDirection().getMotX() * (frogger.getSpeed() / animationDuration);
-            frogger.getVelocity().y = frogger.getFacingDirection().getMotY() * (frogger.getSpeed() / animationDuration);
+            frogger.getVelocity().x = frogger.getDirection().getMotX() * (frogger.getJumpDistance() / animationDuration);
+            frogger.getVelocity().y = frogger.getDirection().getMotY() * (frogger.getJumpDistance() / animationDuration);
             frogger.onJumpStart();
         }
     }
 
     private void handleBorders(MovingEntity element) {
-        if (element.getFacingDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
-                element.getFacingDirection() == Direction.RIGHT && element.getX() > WorldRenderer.CAMERA_WIDTH
+        if (element.getRoad().getDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
+                element.getRoad().getDirection() == Direction.RIGHT && element.getX() > WorldRenderer.CAMERA_WIDTH
         ) {
             element.whenOutOfBorder();
         }
@@ -109,40 +110,55 @@ public class WorldController extends Controller {
 
     private void handleCollisions(float delta) {
         if (frogger.getState() != Frogger.State.IDLE) return;
-        for (GameElement element : world.getElements()) {
-            if (element.collideWith(frogger)) {
-                boolean dying = element.onCollide(frogger, delta);
-                if (dying) {
-                    System.out.println(":(");
+
+        for (Road road : world.getRoads()) {
+            for (GameElement element : road.getElements()) {
+                if (element.handleCollision(frogger, delta)) {
+                    System.out.println(":( element");
+                    return;
                 }
+            }
+        }
+
+        for (GameElement element : world.getElements()) {
+            if (element.handleCollision(frogger, delta)) {
+                System.out.println(":( item");
                 return;
             }
         }
 
         // Handle water
 
-        boolean intersectsWithWater = world.getWaterArea().intersects(
-                frogger.getX(),
-                frogger.getY(),
-                frogger.getWidth(),
-                frogger.getHeight()
-        );
-
-        if(intersectsWithWater) {
-            System.out.println("sad water :(");
+        for (Road road : world.getRoads()) {
+            if (road.getType() == Road.Type.WATER) {
+                if (road.collideWith(frogger)) {
+                    System.out.println(":( water");
+                    break;
+                }
+            }
         }
 
+    }
+
+    private void udpate(GameElement element, float delta) {
+        element.update(delta);
+        if (element instanceof MovingEntity) {
+            handleBorders((MovingEntity) element);
+        }
     }
 
     @Override
     public void update(float delta) {
         handleInput();
 
-        for (GameElement element : world.getElements()) {
-            element.update(delta);
-            if (element instanceof MovingEntity) {
-                handleBorders((MovingEntity) element);
+        for (Road road : world.getRoads()) {
+            for (GameElement element : road.getElements()) {
+                udpate(element, delta);
             }
+        }
+        
+        for (GameElement element : world.getElements()) {
+            udpate(element, delta);
         }
 
         handleCollisions(delta);

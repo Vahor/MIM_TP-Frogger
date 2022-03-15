@@ -1,6 +1,5 @@
 package fr.nathan.mim.game.model.type;
 
-import com.badlogic.gdx.utils.Json;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Vehicle extends MovingEntity {
@@ -46,7 +45,7 @@ public class Vehicle extends MovingEntity {
     }
 
     @Override
-    public boolean onCollide(Frogger frogger, float delta) {
+    public boolean onCollideWith(MovingEntity frogger, float delta) {
         System.out.println("Vehicle.onCollide");
         return true;
     }
@@ -71,11 +70,5 @@ public class Vehicle extends MovingEntity {
                 "vehicleType=" + type +
                 ", super=" + super.toString() +
                 '}';
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        json.writeValue("type", type);
     }
 }

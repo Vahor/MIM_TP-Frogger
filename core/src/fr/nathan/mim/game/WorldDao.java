@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
-import fr.nathan.mim.game.model.GameElement;
+import fr.nathan.mim.game.config.Configurable;
 import fr.nathan.mim.game.model.type.*;
 
 public class WorldDao {
@@ -29,8 +29,9 @@ public class WorldDao {
         String rawJson = fileHandle.readString();
 
         World world = parser.fromJson(World.class, rawJson);
+        world.afterDeserialization();
         world.getFrogger().afterDeserialization();
-        for (GameElement element : world.getElements()) {
+        for (Configurable element : world.getRoads()) {
             element.afterDeserialization();
         }
 
@@ -40,6 +41,6 @@ public class WorldDao {
     public void save(String path, World world) {
 
         FileHandle fileHandle = Gdx.files.external(path);
-        fileHandle.writeString(parser.toJson(world), false);
+        fileHandle.writeString(parser.prettyPrint(world), false); // todo toString à la place de prettyPrint
     }
 }

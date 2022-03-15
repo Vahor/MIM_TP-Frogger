@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import fr.nathan.mim.game.TextureFactory;
+import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.type.*;
 
@@ -87,7 +87,7 @@ public class WorldRenderer extends Controller {
                 frogger.getY(),
                 frogger.getWidth(),
                 frogger.getHeight(),
-                90 + frogger.getFacingDirection().getRotation()
+                90 + frogger.getDirection().getRotation()
         );
 
     }
@@ -96,10 +96,10 @@ public class WorldRenderer extends Controller {
         TextureRegion region = TextureFactory.getInstance().getVehicleAtlas().findRegion(Integer.toString(vehicle.getVehicleType().getId()));
         draw(region,
                 vehicle.getX(),
-                vehicle.getY(),
+                vehicle.getRoad().getOffsetY() + vehicle.getY(),
                 vehicle.getWidth(),
                 vehicle.getHeight(),
-                vehicle.getFacingDirection().getRotation()
+                vehicle.getRoad().getDirection().getRotation()
         );
     }
 
@@ -140,10 +140,10 @@ public class WorldRenderer extends Controller {
 
         draw(region,
                 turtle.getX(),
-                turtle.getY(),
+                turtle.getRoad().getOffsetY() + turtle.getY(),
                 turtle.getWidth(),
                 turtle.getHeight(),
-                turtle.getFacingDirection().getRotation()
+                turtle.getRoad().getDirection().getRotation()
         );
     }
 
@@ -151,27 +151,42 @@ public class WorldRenderer extends Controller {
         TextureRegion region = TextureFactory.getInstance().getTreeAtlas().findRegion(Integer.toString(tree.getType().getId()));
         draw(region,
                 tree.getX(),
-                tree.getY(),
+                tree.getRoad().getOffsetY() + tree.getY(),
                 tree.getWidth(),
                 tree.getHeight(),
-                tree.getFacingDirection().getRotation()
+                tree.getRoad().getDirection().getRotation()
         );
     }
 
+    private void draw(GameElement element){
+        System.out.println("element = " + element.getClass());
+    }
+
+    private void drawElement(GameElement element){
+        draw(element);
+        if (element instanceof Vehicle) {
+            drawVehicle((Vehicle) element);
+        }
+        else if (element instanceof Turtle) {
+            drawTurtle((Turtle) element);
+        }
+        else if (element instanceof Tree) {
+            drawTree((Tree) element);
+        } else if (element instanceof Fly) {
+            drawFly((Fly) element);
+        }
+    }
+
     public void drawElements() {
+        for (Road road : world.getRoads()) {
+            for (GameElement element : road.getElements()) {
+                drawElement(element);
+            }
+
+        }
+
         for (GameElement element : world.getElements()) {
-            if (element instanceof Vehicle) {
-                drawVehicle((Vehicle) element);
-            }
-            else if (element instanceof Fly) {
-                drawFly((Fly) element);
-            }
-            else if (element instanceof Turtle) {
-                drawTurtle((Turtle) element);
-            }
-            else if (element instanceof Tree) {
-                drawTree((Tree) element);
-            }
+            drawElement(element);
         }
     }
 

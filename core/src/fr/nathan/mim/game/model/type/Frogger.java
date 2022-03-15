@@ -1,7 +1,8 @@
 package fr.nathan.mim.game.model.type;
 
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Timer;
+import fr.nathan.mim.game.Direction;
+import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Frogger extends MovingEntity {
@@ -12,13 +13,20 @@ public class Frogger extends MovingEntity {
 
     private transient State state = State.IDLE;
     private transient float stateTime = 0;
+    private transient Direction direction = Direction.UP;
 
     private transient boolean canJump = true;
 
-    private float jumpDelay = 0.1f;
+    private final float jumpDelay;
+    private final float jumpDistance;
+
+    public Frogger(float jumpDelay, float jumpDistance) {
+        this.jumpDelay    = jumpDelay;
+        this.jumpDistance = jumpDistance;
+    }
 
     @Override
-    public boolean onCollide(Frogger frogger, float delta) {
+    public boolean onCollideWith(MovingEntity frogger, float delta) {
         return false;
     }
 
@@ -26,6 +34,18 @@ public class Frogger extends MovingEntity {
 
     public boolean canJump() {
         return canJump && state == State.IDLE;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public float getJumpDistance() {
+        return jumpDistance;
     }
 
     public void setState(State state) {
@@ -86,11 +106,5 @@ public class Frogger extends MovingEntity {
                 "state=" + state +
                 ", super=" + super.toString() +
                 '}';
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        json.writeValue("jumpDelay", jumpDelay);
     }
 }

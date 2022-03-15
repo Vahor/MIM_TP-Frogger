@@ -1,13 +1,14 @@
 package fr.nathan.mim.game.model;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.config.Configurable;
+import fr.nathan.mim.game.model.type.Road;
 
-public abstract class GameElement implements Json.Serializable {
+public abstract class GameElement implements Configurable, Collidable {
 
-    protected final Vector2 position = new Vector2(0, 0);
+    protected transient final Vector2 position = new Vector2(0, 0);
+
+    private transient Road road;
 
     abstract public float getWidth();
     abstract public float getHeight();
@@ -16,6 +17,12 @@ public abstract class GameElement implements Json.Serializable {
         return position;
     }
 
+    public Road getRoad() {
+        return road;
+    }
+    public void setRoad(Road road) {
+        this.road = road;
+    }
     public float getX() {
         return position.x;
     }
@@ -24,18 +31,31 @@ public abstract class GameElement implements Json.Serializable {
         return position.y;
     }
 
-    public boolean collideWith(GameElement other) {
+    public float getYWithRoad() {
+        if (road == null) return getY();
+        return getY() + road.getOffsetY();
+    }
+
+    public boolean collideWith(MovingEntity other) {
         return getX() < other.getX() + other.getWidth() &&
                 getX() + getWidth() > other.getX() &&
-                getY() < other.getY() + other.getHeight() && getY() + getHeight() > other.getY();
+                getYWithRoad() < other.getYWithRoad() + other.getHeight() && getYWithRoad() + getHeight() > other.getYWithRoad();
     }
 
     public void update(float delta)    {}
 
     public void afterDeserialization() {}
+    public void afterInitialization()  {}
 
     // return true : end game
-    abstract public boolean onCollide(Frogger frogger, float delta);
+    public boolean onCollideWith(MovingEntity frogger, float delta) {return false;}
+
+    public boolean handleCollision(MovingEntity element, float delta) {
+        if (collideWith(element)) {
+            return onCollideWith(element, delta);
+        }
+        return false;
+    }
 
     @Override
     public String toString() {
@@ -43,16 +63,8 @@ public abstract class GameElement implements Json.Serializable {
                 "position=" + position +
                 ", width=" + getWidth() +
                 ", height=" + getHeight() +
+                ", road=" + getRoad() +
                 '}';
     }
 
-    @Override
-    public void write(Json json) {
-        json.writeValue("position", position);
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        json.readFields(this, jsonData);
-    }
 }

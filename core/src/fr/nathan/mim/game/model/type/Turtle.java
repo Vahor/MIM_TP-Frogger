@@ -1,7 +1,7 @@
 package fr.nathan.mim.game.model.type;
 
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Timer;
+import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Turtle extends MovingEntity {
@@ -12,14 +12,14 @@ public class Turtle extends MovingEntity {
 
     private transient State state = State.MOVE;
     private transient float stateTime = 0;
+    private transient float currentRideTime = 0;
 
-    private float respawnDelay = 3;
-    private float maxRideTime = 2;
+    private final float respawnDelay;
+    private final float maxRideTime;
 
-    private float currentRideTime = 0;
-
-    public Turtle() {
-        onSpawnEnd();
+    public Turtle(float respawnDelay, float maxRideTime) {
+        this.respawnDelay = respawnDelay;
+        this.maxRideTime  = maxRideTime;
     }
 
     public State getState() {
@@ -52,7 +52,7 @@ public class Turtle extends MovingEntity {
     }
 
     @Override
-    public boolean onCollide(Frogger frogger, float delta) {
+    public boolean onCollideWith(MovingEntity frogger, float delta) {
         if (state != State.MOVE) return true;
 
         currentRideTime += delta;
@@ -74,7 +74,7 @@ public class Turtle extends MovingEntity {
     @Override
     public void afterDeserialization() {
         super.afterDeserialization();
-        updateVelocity();
+        onSpawnEnd();
     }
 
     public void onSinkEnd() {
@@ -89,17 +89,7 @@ public class Turtle extends MovingEntity {
 
     public void onSpawnEnd() {
         setState(State.MOVE);
-        getVelocity().set(
-                getFacingDirection().getMotX() * getSpeed(),
-                getFacingDirection().getMotY() * getSpeed()
-        );
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        json.writeValue("respawnDelay", respawnDelay);
-        json.writeValue("maxRideTime", maxRideTime);
+        updateVelocity();
     }
 
     @Override
