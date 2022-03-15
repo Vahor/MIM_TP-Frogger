@@ -1,13 +1,20 @@
-package fr.nathan.mim.game;
+package fr.nathan.mim.game.texture;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import fr.nathan.mim.game.controller.WorldRenderer;
+import fr.nathan.mim.game.model.GameElement;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TextureFactory {
+
+    private Map<Class<? extends GameElement>, TextureHolder<GameElement>> textureMap = new HashMap<Class<? extends GameElement>, TextureHolder<GameElement>>();
 
     private static TextureFactory instance = null;
 
@@ -50,16 +57,20 @@ public class TextureFactory {
         // Turtle
         TextureAtlas turtleAtlasMove = new TextureAtlas(Gdx.files.internal("turtle/move/moving.atlas"));
         TextureAtlas turtleAtlasSink = new TextureAtlas(Gdx.files.internal("turtle/sink.atlas")); // todo en faire un seul avec tout
-        movingTurtle  = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasMove.findRegions("move"), Animation.PlayMode.LOOP);
-        sinkingTurtle = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP);
+        movingTurtle   = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasMove.findRegions("move"), Animation.PlayMode.LOOP);
+        sinkingTurtle  = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP);
         spawningTurtle = new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP_REVERSED);
 
         // TreeLog
-        treeAtlas =  new TextureAtlas(Gdx.files.internal("log/log.pack"));
+        treeAtlas = new TextureAtlas(Gdx.files.internal("log/log.pack"));
 
         // Fly
         TextureAtlas flyAtlas = new TextureAtlas(Gdx.files.internal("fly/fly.pack"));
         idleFly = flyAtlas.findRegion("idle");
+    }
+
+    public TextureRegion getTexture(GameElement model){
+        return textureMap.get(model.getClass()).getTexture(model);
     }
 
     public TextureRegion getIdleFrogger() {
