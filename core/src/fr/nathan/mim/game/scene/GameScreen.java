@@ -19,10 +19,10 @@ public class GameScreen implements Screen, InputProcessor {
     public GameScreen(Batch batch) {
         WorldDao worldDao = new WorldDao();
         World world;
-        world = new World();
-        world.demoWorld();
-//        world = worldDao.get("test2.json");
-        worldDao.save("test2.json", world);
+//        world = new World();
+//        world.demoWorld();
+        world = worldDao.get("config.json");
+//        worldDao.save("config.json", world);
 
         worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world);
@@ -35,6 +35,7 @@ public class GameScreen implements Screen, InputProcessor {
     public void show() {
 
     }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1);

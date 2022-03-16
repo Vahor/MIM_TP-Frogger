@@ -1,5 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Tree extends MovingEntity {
@@ -61,10 +62,9 @@ public class Tree extends MovingEntity {
     }
 
     @Override
-    public boolean onCollideWith(MovingEntity frogger, float delta) {
-
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
         frogger.getVelocity().set(getVelocity());
-        return false;
+        return CollideResult.RIDE;
     }
 
 }

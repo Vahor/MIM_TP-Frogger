@@ -1,5 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Vehicle extends MovingEntity {
@@ -24,15 +25,13 @@ public class Vehicle extends MovingEntity {
         public int getId() {
             return id;
         }
+
+        public static Type random() {
+            return values[World.SHARED_RANDOM.nextInt(values.length)];
+        }
     }
 
     private Type type = Type.RED;
-
-    @Override
-    public void whenOutOfBorder() {
-        setType(Type.values[World.SHARED_RANDOM.nextInt(Type.values.length)]);
-        super.whenOutOfBorder();
-    }
 
     @Override
     public float getHeight() {
@@ -45,12 +44,12 @@ public class Vehicle extends MovingEntity {
     }
 
     @Override
-    public boolean onCollideWith(MovingEntity frogger, float delta) {
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
         System.out.println("Vehicle.onCollide");
-        return true;
+        return CollideResult.DEAD;
     }
 
-    private void setType(Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 

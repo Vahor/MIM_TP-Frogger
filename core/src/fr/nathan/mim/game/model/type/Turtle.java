@@ -1,6 +1,8 @@
 package fr.nathan.mim.game.model.type;
 
 import com.badlogic.gdx.utils.Timer;
+import fr.nathan.mim.game.CollideResult;
+import fr.nathan.mim.game.config.TurtleConfiguration;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Turtle extends MovingEntity {
@@ -16,9 +18,9 @@ public class Turtle extends MovingEntity {
     private final float respawnDelay;
     private final float maxRideTime;
 
-    public Turtle(float respawnDelay, float maxRideTime) {
-        this.respawnDelay = respawnDelay;
-        this.maxRideTime  = maxRideTime;
+    public Turtle(TurtleConfiguration turtleConfiguration) {
+        this.respawnDelay = turtleConfiguration.getRespawnDelay();
+        this.maxRideTime  = turtleConfiguration.getMaxRideTime();
     }
 
     public State getState() {
@@ -51,8 +53,8 @@ public class Turtle extends MovingEntity {
     }
 
     @Override
-    public boolean onCollideWith(MovingEntity frogger, float delta) {
-        if (state != State.MOVE) return true;
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+        if (state != State.MOVE) return CollideResult.NOTHING;
 
         currentRideTime += delta;
 
@@ -67,7 +69,7 @@ public class Turtle extends MovingEntity {
 
         // todo reset currentRideTime lorsqu'on n'est plus dessus
 
-        return false;
+        return CollideResult.RIDE;
     }
 
     @Override

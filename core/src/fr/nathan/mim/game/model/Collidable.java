@@ -1,7 +1,9 @@
 package fr.nathan.mim.game.model;
 
+import fr.nathan.mim.game.CollideResult;
+
 public interface Collidable {
 
     boolean collideWith(MovingEntity element);
-    boolean onCollideWith(MovingEntity element, float delta);
+    CollideResult onCollideWith(MovingEntity element, float delta);
 }

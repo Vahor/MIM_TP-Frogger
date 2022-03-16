@@ -26,8 +26,6 @@ public class TextureFactory {
         return instance;
     }
 
-    // Frogger
-
     private final Texture background;
 
     public TextureFactory() {
