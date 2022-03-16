@@ -1,12 +1,13 @@
 package fr.nathan.mim.game.controller;
 
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 import fr.nathan.mim.game.model.type.Frogger;
 import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
+import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.texture.type.FroggerTexture;
 
 import java.util.HashMap;
@@ -102,8 +103,20 @@ public class WorldController extends Controller {
     }
 
     private void handleBorders(MovingEntity element) {
-        if (element.getRoad().getDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
-                element.getRoad().getDirection() == Direction.RIGHT && element.getX() > WorldRenderer.CAMERA_WIDTH
+        if (element.getDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
+                element.getDirection() == Direction.RIGHT && element.getX() > WorldRenderer.WORLD_WIDTH ||
+                element.getY() > WorldRenderer.WORLD_HEIGHT ||
+                element.getY() < 0
+        ) {
+            element.whenOutOfBorder();
+        }
+    }
+
+    private void handleBordersFrogger(Frogger element) {
+        if (element.getX() < 0 ||
+                element.getX() > WorldRenderer.WORLD_WIDTH - element.getWidth() ||
+                element.getY() > WorldRenderer.WORLD_HEIGHT - element.getHeight() ||
+                element.getY() < 0
         ) {
             element.whenOutOfBorder();
         }
@@ -114,7 +127,10 @@ public class WorldController extends Controller {
 
         for (Road road : world.getRoads()) {
             for (GameElement element : road.getElements()) {
-                if (element.handleCollision(frogger, delta)) {
+                CollideResult collideResult = element.handleCollision(frogger, delta);
+                if (collideResult == CollideResult.MISS) continue;
+                if (collideResult == CollideResult.RIDE) return;
+                if (collideResult == CollideResult.DEAD) {
                     System.out.println(":( element");
                     return;
                 }
@@ -122,7 +138,9 @@ public class WorldController extends Controller {
         }
 
         for (GameElement element : world.getElements()) {
-            if (element.handleCollision(frogger, delta)) {
+            CollideResult collideResult = element.handleCollision(frogger, delta);
+            if (collideResult == CollideResult.MISS) continue;
+            if (collideResult == CollideResult.DEAD) {
                 System.out.println(":( item");
                 return;
             }
@@ -141,11 +159,17 @@ public class WorldController extends Controller {
 
     }
 
-    private void udpate(GameElement element, float delta) {
+    private void update(GameElement element, float delta) {
         element.update(delta);
         if (element instanceof MovingEntity) {
             handleBorders((MovingEntity) element);
         }
+    }
+
+
+    private void updateFrogger(float delta) {
+        frogger.update(delta);
+        handleBordersFrogger(frogger);
     }
 
     @Override
@@ -154,16 +178,17 @@ public class WorldController extends Controller {
 
         for (Road road : world.getRoads()) {
             for (GameElement element : road.getElements()) {
-                udpate(element, delta);
+                update(element, delta);
             }
         }
-        
+
         for (GameElement element : world.getElements()) {
-            udpate(element, delta);
+            update(element, delta);
         }
 
         handleCollisions(delta);
 
-        frogger.update(delta);
+        updateFrogger(delta);
     }
+
 }

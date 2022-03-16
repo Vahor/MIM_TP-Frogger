@@ -1,7 +1,10 @@
 package fr.nathan.mim.game.model.type;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
+import fr.nathan.mim.game.config.FroggerConfiguration;
+import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Frogger extends MovingEntity {
@@ -18,21 +21,10 @@ public class Frogger extends MovingEntity {
 
     private final float jumpDelay;
     private final float jumpDistance;
-    private final float animationDuration;
 
-    public Frogger(float jumpDelay, float jumpDistance, float animationDuration) {
-        this.jumpDelay         = jumpDelay;
-        this.jumpDistance      = jumpDistance;
-        this.animationDuration = animationDuration;
-    }
-
-    @Override
-    public boolean onCollideWith(MovingEntity frogger, float delta) {
-        return false;
-    }
-
-    public float getAnimationDuration() {
-        return animationDuration;
+    public Frogger(FroggerConfiguration froggerConfiguration) {
+        this.jumpDelay    = froggerConfiguration.getJumpDelay();
+        this.jumpDistance = froggerConfiguration.getJumpDistance();
     }
 
     public State getState() {return state;}
@@ -54,7 +46,7 @@ public class Frogger extends MovingEntity {
     }
 
     @Override
-    public float getYWithRoad() {
+    public float getYWithRoadOffset() {
         return getY();
     }
 
@@ -71,9 +63,12 @@ public class Frogger extends MovingEntity {
 
     @Override
     public void whenOutOfBorder() {
-        super.whenOutOfBorder();
-        // todo gerer les bordures pour pas que la grenouille sorte du cadre
-        //  Avec les flèches + lorsqu'on est sur une tortur/arbre
+        System.out.println("Frogger.whenOutOfBorder");
+        position.set(
+                MathUtils.clamp(position.x, 0, WorldRenderer.WORLD_WIDTH - getWidth()),
+                MathUtils.clamp(position.y, 0, WorldRenderer.WORLD_HEIGHT - getHeight())
+        );
+        onJumpEnd();
     }
 
     public void onJumpEnd() {
@@ -102,12 +97,12 @@ public class Frogger extends MovingEntity {
 
     @Override
     public float getWidth() {
-        return .7f;
+        return .55f;
     }
 
     @Override
     public float getHeight() {
-        return .7f;
+        return .55f;
     }
 
     @Override

@@ -4,16 +4,14 @@ public class FroggerConfiguration {
 
     private float jumpDelay;
     private float jumpDistance;
-    private float animationDuration;
 
     // parser
     public FroggerConfiguration() {
     }
 
-    public FroggerConfiguration(float jumpDelay, float jumpDistance, float animationDuration) {
+    public FroggerConfiguration(float jumpDelay, float jumpDistance) {
         this.jumpDelay         = jumpDelay;
         this.jumpDistance      = jumpDistance;
-        this.animationDuration = animationDuration;
     }
 
     public float getJumpDelay() {
@@ -22,9 +20,5 @@ public class FroggerConfiguration {
 
     public float getJumpDistance() {
         return jumpDistance;
-    }
-
-    public float getAnimationDuration() {
-        return animationDuration;
     }
 }
