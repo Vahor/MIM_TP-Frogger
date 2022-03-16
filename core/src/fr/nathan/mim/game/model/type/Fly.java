@@ -1,10 +1,13 @@
 package fr.nathan.mim.game.model.type;
 
+import com.badlogic.gdx.math.Vector2;
 import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.FlyConfiguration;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
+
+import java.util.List;
 
 public class Fly extends GameElement {
 
@@ -12,10 +15,12 @@ public class Fly extends GameElement {
 
     private final float changeSpotDelay;
     private final float stayOnSportDelay;
+    private final List<Vector2> positions;
 
     public Fly(FlyConfiguration flyConfiguration) {
         this.changeSpotDelay  = flyConfiguration.getChangeSpotDelay();
         this.stayOnSportDelay = flyConfiguration.getStayOnSportDelay();
+        this.positions        = flyConfiguration.getPositions();
     }
 
     @Override
@@ -47,9 +52,12 @@ public class Fly extends GameElement {
         super.update(delta);
         stateTime += delta;
         if (changeSpotDelay > 0 && stateTime > changeSpotDelay) {
-            getPosition().x = World.SHARED_RANDOM.nextFloat() * 8; // todo config, positions disponibles
-            getPosition().y = World.SHARED_RANDOM.nextInt(13); // todo config
-            stateTime       = -stayOnSportDelay;
+            getPosition().set(getNextPosition());
+            stateTime = -stayOnSportDelay;
         }
+    }
+
+    public Vector2 getNextPosition() {
+        return positions.get(World.SHARED_RANDOM.nextInt(positions.size()));
     }
 }

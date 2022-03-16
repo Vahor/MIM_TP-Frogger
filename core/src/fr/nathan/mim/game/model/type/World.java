@@ -1,5 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.Configurable;
@@ -10,9 +11,7 @@ import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class World implements Configurable {
 
@@ -97,7 +96,9 @@ public class World implements Configurable {
                 .15f
         );
 
-        elements.add(new Fly(flyConfiguration));
+        Fly fly = new Fly(flyConfiguration);
+        fly.getPosition().set(fly.getNextPosition());
+        elements.add(fly);
 
     }
 
@@ -105,9 +106,16 @@ public class World implements Configurable {
 
         froggerConfiguration = new FroggerConfiguration(.1f, 1);
         turtleConfiguration  = new TurtleConfiguration(3, 3f);
-        flyConfiguration     = new FlyConfiguration(3, 3f);
+        flyConfiguration     = new FlyConfiguration(3, 3f, new ArrayList<Vector2>(Arrays.asList(
+                new Vector2(0,12),
+                new Vector2(2,12),
+                new Vector2(4,12),
+                new Vector2(6,12),
+                new Vector2(8,12)
+        )));
 
         roads   = new HashSet<Road>();
+
         frogger = new Frogger(froggerConfiguration);
         frogger.getPosition().set(4, .20f);
 
