@@ -1,0 +1,26 @@
+log.pack.png
+size: 805, 57
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0
+  rotate: false
+  xy: 0, 0
+  size: 351, 57
+  orig: 351, 57
+  offset: 0, 0
+  index: 1
+1
+  rotate: false
+  xy: 351, 0
+  size: 183, 57
+  orig: 183, 57
+  offset: 0, 0
+  index: 2
+2
+  rotate: false
+  xy: 534, 0
+  size: 271, 57
+  orig: 271, 57
+  offset: 0, 0
+  index: 3

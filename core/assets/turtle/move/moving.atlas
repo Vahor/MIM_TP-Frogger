@@ -1,0 +1,47 @@
+moving.png
+size: 206, 126
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+move
+  rotate: false
+  xy: 0, 0
+  size: 69, 55
+  orig: 69, 55
+  offset: 0, 0
+  index: 1
+move
+  rotate: false
+  xy: 138, 0
+  size: 68, 60
+  orig: 68, 60
+  offset: 0, 0
+  index: 2
+move
+  rotate: false
+  xy: 0, 60
+  size: 69, 65
+  orig: 69, 65
+  offset: 0, 0
+  index: 3
+move
+  rotate: false
+  xy: 137, 60
+  size: 69, 66
+  orig: 69, 66
+  offset: 0, 0
+  index: 4
+move
+  rotate: false
+  xy: 69, 60
+  size: 68, 65
+  orig: 68, 65
+  offset: 0, 0
+  index: 5
+move
+  rotate: false
+  xy: 69, 0
+  size: 69, 55
+  orig: 69, 55
+  offset: 0, 0
+  index: 6
