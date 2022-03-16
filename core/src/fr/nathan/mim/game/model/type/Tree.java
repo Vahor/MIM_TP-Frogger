@@ -1,5 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Tree extends MovingEntity {
@@ -17,19 +18,31 @@ public class Tree extends MovingEntity {
         private static final Type[] values = values();
 
         Type(int id, float width) {
-            this.id   = id;
+            this.id    = id;
             this.width = width;
         }
 
         public int getId() {
             return id;
         }
+
+        public static Type random() {
+            return values[World.SHARED_RANDOM.nextInt(values.length)];
+        }
     }
 
-    private Type type = Type.SMALL;
+    private Type type;
+
+    public Tree(Type type) {
+        this.type = type;
+    }
 
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override
@@ -49,10 +62,9 @@ public class Tree extends MovingEntity {
     }
 
     @Override
-    public boolean onCollide(Frogger frogger, float delta) {
-
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
         frogger.getVelocity().set(getVelocity());
-        return false;
+        return CollideResult.RIDE;
     }
 
 }

@@ -1,11 +1,14 @@
 package fr.nathan.mim.game.controller;
 
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.TextureFactory;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
+import fr.nathan.mim.game.texture.TextureFactory;
+import fr.nathan.mim.game.texture.type.FroggerTexture;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,34 +77,46 @@ public class WorldController extends Controller {
         if (frogger.getState() != Frogger.State.IDLE) return;
 
         if (isLeftPressed()) {
-            frogger.setFacingDirection(Direction.LEFT);
+            frogger.setDirection(Direction.LEFT);
         }
         else if (isRightPressed()) {
-            frogger.setFacingDirection(Direction.RIGHT);
+            frogger.setDirection(Direction.RIGHT);
         }
         else if (isUpPressed()) {
-            frogger.setFacingDirection(Direction.UP);
+            frogger.setDirection(Direction.UP);
         }
         else if (isDownPressed()) {
-            frogger.setFacingDirection(Direction.DOWN);
+            frogger.setDirection(Direction.DOWN);
         }
         else {
             return;
         }
 
-        if(frogger.canJump()) {
-            float animationDuration = TextureFactory.getInstance().getJumpingFrogger().getAnimationDuration();
+        if (frogger.canJump()) {
+            float animationDuration = ((FroggerTexture) TextureFactory.getInstance().getTextureHolder(Frogger.class)).getJumpingAnimation().getAnimationDuration();
 
             frogger.setState(Frogger.State.JUMPING);
-            frogger.getVelocity().x = frogger.getFacingDirection().getMotX() * (frogger.getSpeed() / animationDuration);
-            frogger.getVelocity().y = frogger.getFacingDirection().getMotY() * (frogger.getSpeed() / animationDuration);
+            frogger.getVelocity().x = frogger.getDirection().getMotX() * (frogger.getJumpDistance() / animationDuration);
+            frogger.getVelocity().y = frogger.getDirection().getMotY() * (frogger.getJumpDistance() / animationDuration);
             frogger.onJumpStart();
         }
     }
 
     private void handleBorders(MovingEntity element) {
-        if (element.getFacingDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
-                element.getFacingDirection() == Direction.RIGHT && element.getX() > WorldRenderer.CAMERA_WIDTH
+        if (element.getDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
+                element.getDirection() == Direction.RIGHT && element.getX() > WorldRenderer.WORLD_WIDTH ||
+                element.getY() > WorldRenderer.WORLD_HEIGHT ||
+                element.getY() < 0
+        ) {
+            element.whenOutOfBorder();
+        }
+    }
+
+    private void handleBordersFrogger(Frogger element) {
+        if (element.getX() < 0 ||
+                element.getX() > WorldRenderer.WORLD_WIDTH - element.getWidth() ||
+                element.getY() > WorldRenderer.WORLD_HEIGHT - element.getHeight() ||
+                element.getY() < 0
         ) {
             element.whenOutOfBorder();
         }
@@ -109,44 +124,71 @@ public class WorldController extends Controller {
 
     private void handleCollisions(float delta) {
         if (frogger.getState() != Frogger.State.IDLE) return;
-        for (GameElement element : world.getElements()) {
-            if (element.collideWith(frogger)) {
-                boolean dying = element.onCollide(frogger, delta);
-                if (dying) {
-                    System.out.println(":(");
+
+        for (Road road : world.getRoads()) {
+            for (GameElement element : road.getElements()) {
+                CollideResult collideResult = element.handleCollision(frogger, delta);
+                if (collideResult == CollideResult.MISS) continue;
+                if (collideResult == CollideResult.RIDE) return;
+                if (collideResult == CollideResult.DEAD) {
+                    System.out.println(":( element");
+                    return;
                 }
+            }
+        }
+
+        for (GameElement element : world.getElements()) {
+            CollideResult collideResult = element.handleCollision(frogger, delta);
+            if (collideResult == CollideResult.MISS) continue;
+            if (collideResult == CollideResult.DEAD) {
+                System.out.println(":( item");
                 return;
             }
         }
 
         // Handle water
 
-        boolean intersectsWithWater = world.getWaterArea().intersects(
-                frogger.getX(),
-                frogger.getY(),
-                frogger.getWidth(),
-                frogger.getHeight()
-        );
-
-        if(intersectsWithWater) {
-            System.out.println("sad water :(");
+        for (Road road : world.getRoads()) {
+            if (road.getType() == Road.Type.WATER) {
+                if (road.collideWith(frogger)) {
+                    System.out.println(":( water");
+                    break;
+                }
+            }
         }
 
+    }
+
+    private void update(GameElement element, float delta) {
+        element.update(delta);
+        if (element instanceof MovingEntity) {
+            handleBorders((MovingEntity) element);
+        }
+    }
+
+
+    private void updateFrogger(float delta) {
+        frogger.update(delta);
+        handleBordersFrogger(frogger);
     }
 
     @Override
     public void update(float delta) {
         handleInput();
 
-        for (GameElement element : world.getElements()) {
-            element.update(delta);
-            if (element instanceof MovingEntity) {
-                handleBorders((MovingEntity) element);
+        for (Road road : world.getRoads()) {
+            for (GameElement element : road.getElements()) {
+                update(element, delta);
             }
+        }
+
+        for (GameElement element : world.getElements()) {
+            update(element, delta);
         }
 
         handleCollisions(delta);
 
-        frogger.update(delta);
+        updateFrogger(delta);
     }
+
 }

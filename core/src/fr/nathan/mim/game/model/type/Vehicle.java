@@ -1,6 +1,6 @@
 package fr.nathan.mim.game.model.type;
 
-import com.badlogic.gdx.utils.Json;
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Vehicle extends MovingEntity {
@@ -25,15 +25,13 @@ public class Vehicle extends MovingEntity {
         public int getId() {
             return id;
         }
+
+        public static Type random() {
+            return values[World.SHARED_RANDOM.nextInt(values.length)];
+        }
     }
 
     private Type type = Type.RED;
-
-    @Override
-    public void whenOutOfBorder() {
-        setVehicleType(Type.values[World.SHARED_RANDOM.nextInt(Type.values.length)]);
-        super.whenOutOfBorder();
-    }
 
     @Override
     public float getHeight() {
@@ -46,16 +44,16 @@ public class Vehicle extends MovingEntity {
     }
 
     @Override
-    public boolean onCollide(Frogger frogger, float delta) {
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
         System.out.println("Vehicle.onCollide");
-        return true;
+        return CollideResult.DEAD;
     }
 
-    private void setVehicleType(Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public Type getVehicleType() {
+    public Type getType() {
         return type;
     }
 
@@ -71,11 +69,5 @@ public class Vehicle extends MovingEntity {
                 "vehicleType=" + type +
                 ", super=" + super.toString() +
                 '}';
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        json.writeValue("type", type);
     }
 }

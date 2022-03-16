@@ -1,21 +1,36 @@
 package fr.nathan.mim.game.model;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.CollideResult;
+import fr.nathan.mim.game.Direction;
+import fr.nathan.mim.game.config.Configurable;
+import fr.nathan.mim.game.model.type.Road;
 
-public abstract class GameElement implements Json.Serializable {
+public abstract class GameElement implements Configurable, Collidable {
 
-    protected final Vector2 position = new Vector2(0, 0);
+    protected transient final Vector2 position = new Vector2(0, 0);
+
+    private transient Road road;
+
+    private transient float offsetXToNextEntity;
 
     abstract public float getWidth();
     abstract public float getHeight();
+
+    public Direction getDirection() {
+        return road.getDirection();
+    }
 
     public Vector2 getPosition() {
         return position;
     }
 
+    public Road getRoad() {
+        return road;
+    }
+    public void setRoad(Road road) {
+        this.road = road;
+    }
     public float getX() {
         return position.x;
     }
@@ -24,10 +39,24 @@ public abstract class GameElement implements Json.Serializable {
         return position.y;
     }
 
-    public boolean collideWith(GameElement other) {
+    public float getRotationOffset(){ // todo faire la rotation sur le png directement ?
+        return 0;
+    }
+
+    public float getOffsetXToNextEntity() {
+        return offsetXToNextEntity;
+    }
+    public void setOffsetXToNextEntity(float offsetXToNextEntity) {
+        this.offsetXToNextEntity = offsetXToNextEntity;
+    }
+    public float getYWithRoadOffset() {
+        return getY() + road.getOffsetY();
+    }
+
+    public boolean collideWith(MovingEntity other) {
         return getX() < other.getX() + other.getWidth() &&
                 getX() + getWidth() > other.getX() &&
-                getY() < other.getY() + other.getHeight() && getY() + getHeight() > other.getY();
+                getYWithRoadOffset() < other.getYWithRoadOffset() + other.getHeight() && getYWithRoadOffset() + getHeight() > other.getYWithRoadOffset();
     }
 
     public void update(float delta)    {}
@@ -35,7 +64,14 @@ public abstract class GameElement implements Json.Serializable {
     public void afterDeserialization() {}
 
     // return true : end game
-    abstract public boolean onCollide(Frogger frogger, float delta);
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {return CollideResult.NOTHING;}
+
+    public CollideResult handleCollision(MovingEntity element, float delta) {
+        if (collideWith(element)) {
+            return onCollideWith(element, delta);
+        }
+        return CollideResult.MISS;
+    }
 
     @Override
     public String toString() {
@@ -43,16 +79,8 @@ public abstract class GameElement implements Json.Serializable {
                 "position=" + position +
                 ", width=" + getWidth() +
                 ", height=" + getHeight() +
+                ", road=" + getRoad() +
                 '}';
     }
 
-    @Override
-    public void write(Json json) {
-        json.writeValue("position", position);
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        json.readFields(this, jsonData);
-    }
 }

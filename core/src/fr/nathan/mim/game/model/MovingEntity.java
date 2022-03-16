@@ -1,8 +1,6 @@
 package fr.nathan.mim.game.model;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.controller.WorldRenderer;
 
@@ -10,22 +8,9 @@ public abstract class MovingEntity extends GameElement {
 
     protected transient Vector2 velocity = new Vector2();
 
-    private float speed = 1;
-
-    private Direction facingDirection = Direction.LEFT;
-
-    public void setFacingDirection(Direction facingDirection) {
-        this.facingDirection = facingDirection;
-    }
-    public Direction getFacingDirection() {
-        return facingDirection;
-    }
-
     public Vector2 getVelocity() {
         return velocity;
     }
-
-    public final float getSpeed() {return speed;}
 
     @Override
     public void update(float delta) {
@@ -34,16 +19,29 @@ public abstract class MovingEntity extends GameElement {
     }
 
     public void whenOutOfBorder() {
-        if (facingDirection == Direction.LEFT)
-            position.x = WorldRenderer.CAMERA_WIDTH;
-        else if (facingDirection == Direction.RIGHT)
-            position.x = -getWidth();
+        if (getDirection() == Direction.LEFT) {
+            // On récupère l'élement le plus à droite et on y ajoute l'écart requis
+            GameElement lastElement = getRoad().getLastElement();
+
+            // On ne veut pas tp au centre de l'écran, donc on ne prend que ce qui est après la bordure
+            float x = Math.max(lastElement.getX() + lastElement.getWidth(), WorldRenderer.WORLD_WIDTH);
+
+            position.x = x + getOffsetXToNextEntity();
+        }
+        else if (getDirection() == Direction.RIGHT) {
+            GameElement firstElement = getRoad().getFirstElement();
+
+            float x = Math.min(firstElement.getX(), 0);
+
+            position.x = x - getOffsetXToNextEntity();
+        }
+
     }
 
     protected void updateVelocity() {
         getVelocity().set(
-                getFacingDirection().getMotX() * getSpeed(),
-                getFacingDirection().getMotY() * getSpeed()
+                getRoad().getDirection().getMotX() * getRoad().getMoveSpeed(),
+                getRoad().getDirection().getMotY() * getRoad().getMoveSpeed()
         );
     }
 
@@ -51,22 +49,7 @@ public abstract class MovingEntity extends GameElement {
     public String toString() {
         return "MovingEntity{" +
                 "velocity=" + velocity +
-                ", facingDirection=" + facingDirection +
-                ", speed=" + getSpeed() +
                 ", super=" + super.toString() +
                 '}';
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        json.writeValue("speed", speed);
-        json.writeValue("facingDirection", facingDirection);
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonData) {
-        super.read(json, jsonData);
-        setFacingDirection(Direction.valueOf(jsonData.getString("facingDirection")));
     }
 }

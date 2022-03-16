@@ -1,16 +1,21 @@
 package fr.nathan.mim.game.model.type;
 
-import com.badlogic.gdx.utils.Json;
+import fr.nathan.mim.game.CollideResult;
+import fr.nathan.mim.game.Direction;
+import fr.nathan.mim.game.config.FlyConfiguration;
 import fr.nathan.mim.game.model.GameElement;
+import fr.nathan.mim.game.model.MovingEntity;
 
 public class Fly extends GameElement {
 
-    private float[] availableSpots = new float[]{0, 2, 4, 8};
-    private float changeSpotDelay = 5;
-
     private transient float stateTime = 0;
 
-    public Fly() {
+    private final float changeSpotDelay;
+    private final float stayOnSportDelay;
+
+    public Fly(FlyConfiguration flyConfiguration) {
+        this.changeSpotDelay  = flyConfiguration.getChangeSpotDelay();
+        this.stayOnSportDelay = flyConfiguration.getStayOnSportDelay();
     }
 
     @Override
@@ -23,9 +28,18 @@ public class Fly extends GameElement {
     }
 
     @Override
-    public boolean onCollide(Frogger frogger, float delta) {
-        System.out.println("Fly.onCollide");
-        return false;
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+        return CollideResult.NOTHING;
+    }
+
+    @Override
+    public float getYWithRoadOffset() {
+        return getY();
+    }
+
+    @Override
+    public Direction getDirection() {
+        return Direction.RIGHT;
     }
 
     @Override
@@ -33,15 +47,9 @@ public class Fly extends GameElement {
         super.update(delta);
         stateTime += delta;
         if (changeSpotDelay > 0 && stateTime > changeSpotDelay) {
-            getPosition().x = availableSpots[World.SHARED_RANDOM.nextInt(availableSpots.length)];
-            stateTime       = 0;
+            getPosition().x = World.SHARED_RANDOM.nextFloat() * 8; // todo config, positions disponibles
+            getPosition().y = World.SHARED_RANDOM.nextInt(13); // todo config
+            stateTime       = -stayOnSportDelay;
         }
-    }
-
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        json.writeValue("availableSpots", availableSpots);
-        json.writeValue("changeSpotDelay", changeSpotDelay);
     }
 }
