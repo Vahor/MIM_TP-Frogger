@@ -1,6 +1,7 @@
 package fr.nathan.mim.game.model;
 
 import com.badlogic.gdx.math.Vector2;
+import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.Configurable;
 import fr.nathan.mim.game.model.type.Road;
@@ -10,6 +11,8 @@ public abstract class GameElement implements Configurable, Collidable {
     protected transient final Vector2 position = new Vector2(0, 0);
 
     private transient Road road;
+
+    private transient float offsetXToNextEntity;
 
     abstract public float getWidth();
     abstract public float getHeight();
@@ -40,29 +43,34 @@ public abstract class GameElement implements Configurable, Collidable {
         return 0;
     }
 
-    public float getYWithRoad() {
+    public float getOffsetXToNextEntity() {
+        return offsetXToNextEntity;
+    }
+    public void setOffsetXToNextEntity(float offsetXToNextEntity) {
+        this.offsetXToNextEntity = offsetXToNextEntity;
+    }
+    public float getYWithRoadOffset() {
         return getY() + road.getOffsetY();
     }
 
     public boolean collideWith(MovingEntity other) {
         return getX() < other.getX() + other.getWidth() &&
                 getX() + getWidth() > other.getX() &&
-                getYWithRoad() < other.getYWithRoad() + other.getHeight() && getYWithRoad() + getHeight() > other.getYWithRoad();
+                getYWithRoadOffset() < other.getYWithRoadOffset() + other.getHeight() && getYWithRoadOffset() + getHeight() > other.getYWithRoadOffset();
     }
 
     public void update(float delta)    {}
 
     public void afterDeserialization() {}
-    public void afterInitialization()  {}
 
     // return true : end game
-    public boolean onCollideWith(MovingEntity frogger, float delta) {return false;}
+    public CollideResult onCollideWith(MovingEntity frogger, float delta) {return CollideResult.NOTHING;}
 
-    public boolean handleCollision(MovingEntity element, float delta) {
+    public CollideResult handleCollision(MovingEntity element, float delta) {
         if (collideWith(element)) {
             return onCollideWith(element, delta);
         }
-        return false;
+        return CollideResult.MISS;
     }
 
     @Override

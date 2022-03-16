@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class World implements Configurable {
 
-    private long seed;
+    private long seed = -1;
 
     private transient Frogger frogger;
 
@@ -44,10 +44,14 @@ public class World implements Configurable {
 
     @Override
     public void afterDeserialization() {
-        SHARED_RANDOM = new Random(seed);
+        if (seed != 0)
+            SHARED_RANDOM = new Random(seed);
+        else
+            SHARED_RANDOM = new Random();
 
         // Ajout des elements sur les routes
         for (Road road : roads) {
+            float previousOffsetX = 0;
             float offsetX = 0;
             for (int i = 0; i < road.getEntityCount(); i++) {
                 GameElement element = null;
@@ -58,55 +62,65 @@ public class World implements Configurable {
                         element = new Tree(Tree.Type.random());
                     }
                     else {
-                        element = new Turtle(turtleConfiguration.getRespawnDelay(), turtleConfiguration.getMaxRideTime());
+                        element = new Turtle(turtleConfiguration);
                     }
                 }
 
                 if (road.getType() == Road.Type.ROAD) {
-                    element = new Vehicle();
+                    Vehicle vehicle = new Vehicle();
+                    vehicle.setType(Vehicle.Type.random());
+                    element = vehicle;
                 }
 
 
                 if (element != null) {
+                    offsetX += element.getWidth();
                     element.getPosition().x = road.getDirection() == Direction.LEFT ? offsetX : -offsetX;
+                    element.setOffsetXToNextEntity(offsetX - previousOffsetX);
 
                     road.addElement(element);
                 }
 
 
-                offsetX += road.getEntityMinDistance();
+                // todo on suppose que la différence n'est pas positive, faire le test dans le constructeur de Road
+                // min <= max
+                previousOffsetX = offsetX;
+                offsetX += (SHARED_RANDOM.nextFloat() * (road.getEntityMaxDistance() - road.getEntityMinDistance())) + road.getEntityMinDistance();
 
             }
 
         }
 
-        frogger = new Frogger(froggerConfiguration.getJumpDelay(), froggerConfiguration.getJumpDistance(), froggerConfiguration.getAnimationDuration());
+        frogger = new Frogger(froggerConfiguration);
+        frogger.getPosition().set(
+                (WorldRenderer.WORLD_WIDTH - frogger.getWidth()) / 2,
+                .15f
+        );
 
-        elements.add(new Fly(flyConfiguration.getChangeSpotDelay(), flyConfiguration.getStayOnSportDelay()));
-
-        for (Road road : roads) {
-            road.afterInitialization();
-        }
-
-    }
-
-    @Override
-    public void afterInitialization() {
+        elements.add(new Fly(flyConfiguration));
 
     }
 
     public void demoWorld() {
 
-        froggerConfiguration = new FroggerConfiguration(.1f, 1, 7);
+        froggerConfiguration = new FroggerConfiguration(.1f, 1);
         turtleConfiguration  = new TurtleConfiguration(3, 3f);
         flyConfiguration     = new FlyConfiguration(3, 3f);
 
         roads   = new HashSet<Road>();
-        frogger = new Frogger(.1f, 1, WorldRenderer.FRAME_DURATION * 6);
+        frogger = new Frogger(froggerConfiguration);
         frogger.getPosition().set(4, .20f);
 
+        SHARED_RANDOM = new Random();
+
         for (int i = 1; i < 6; i++) {
-            Road road = new Road(1, Direction.RIGHT, 1, 1, i, Road.Type.ROAD);
+            Road road = new Road(SHARED_RANDOM.nextFloat() + .5f,
+                    SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT,
+                    SHARED_RANDOM.nextInt(3) + 1,
+                    SHARED_RANDOM.nextInt(3) + 1,
+                    SHARED_RANDOM.nextInt(2) + 3,
+                    i,
+                    Road.Type.ROAD);
 
             if (SHARED_RANDOM.nextInt(2) == 0) {
                 road.addElement(new Vehicle());
@@ -115,11 +129,17 @@ public class World implements Configurable {
         }
 
         for (int i = 7; i < 12; i++) {
-            Road road = new Road(1, Direction.RIGHT, 1, 1, i, Road.Type.WATER);
+            Road road = new Road(SHARED_RANDOM.nextFloat() + .5f,
+                    SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT,
+                    SHARED_RANDOM.nextInt(3) + 1,
+                    SHARED_RANDOM.nextInt(3) + 1,
+                    SHARED_RANDOM.nextInt(2) + 3,
+                    i,
+                    Road.Type.WATER);
 
             MovingEntity entity;
             if (SHARED_RANDOM.nextBoolean()) {
-                entity = new Turtle(1, 3);
+                entity = new Turtle(turtleConfiguration);
             }
             else {
                 entity = new Tree(Tree.Type.random());
@@ -129,9 +149,9 @@ public class World implements Configurable {
             roads.add(road);
         }
 
-        seed = 1;
+        seed = 0;
 
 
-        elements.add(new Fly(flyConfiguration.getChangeSpotDelay(), flyConfiguration.getStayOnSportDelay()));
+        elements.add(new Fly(flyConfiguration));
     }
 }

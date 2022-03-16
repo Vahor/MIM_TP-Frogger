@@ -21,14 +21,16 @@ public class Road implements Configurable {
 
     private int entityCount;
     private float entityMinDistance;
+    private float entityMaxDistance;
 
     private float offsetY;
 
-    public Road(float moveSpeed, Direction direction, int entityCount, int entityMinDistance, float offsetY, Type type) {
+    public Road(float moveSpeed, Direction direction, int entityCount, int entityMinDistance, int entityMaxDistance, float offsetY, Type type) {
         this.moveSpeed         = moveSpeed;
         this.direction         = direction;
         this.entityCount       = entityCount;
         this.entityMinDistance = entityMinDistance;
+        this.entityMaxDistance = entityMaxDistance;
         this.offsetY           = offsetY;
         this.type              = type;
     }
@@ -62,8 +64,43 @@ public class Road implements Configurable {
         return entityMinDistance;
     }
 
+    public float getEntityMaxDistance() {
+        return entityMaxDistance;
+    }
+
     public float getOffsetY() {
         return offsetY;
+    }
+
+    /**
+     * Retourne l'élement avec le plus petit X
+     * @return Element le plus proche de la bordure gauche
+     */
+    public GameElement getFirstElement() {
+        GameElement result = null;
+        for (GameElement element : elements) {
+            if (result == null)
+                result = element;
+            else if (result.getX() > element.getX())
+                result = element;
+        }
+        return result;
+    }
+
+    /**
+     *
+     * Retourne l'élement avec le plus grand X
+     * @return Element le plus proche de la bordure droite
+     */
+    public GameElement getLastElement() {
+        GameElement result = null;
+        for (GameElement element : elements) {
+            if (result == null)
+                result = element;
+            else if (result.getX() < element.getX())
+                result = element;
+        }
+        return result;
     }
 
     public Type getType() {
@@ -75,20 +112,13 @@ public class Road implements Configurable {
     }
 
     public boolean collideWith(GameElement other) {
-        return offsetY < other.getYWithRoad() + other.getHeight() && offsetY + getHeight() > other.getYWithRoad();
+        return offsetY < other.getYWithRoadOffset() + other.getHeight() && offsetY + getHeight() > other.getYWithRoadOffset();
     }
 
     @Override
     public void afterDeserialization() {
         for (GameElement element : elements) {
             element.afterDeserialization();
-        }
-    }
-
-    @Override
-    public void afterInitialization() {
-        for (GameElement element : elements) {
-            element.afterInitialization();
         }
     }
 
@@ -100,6 +130,7 @@ public class Road implements Configurable {
                 ", type=" + type +
                 ", entityCount=" + entityCount +
                 ", entityMinDistance=" + entityMinDistance +
+                ", entityMaxDistance=" + entityMaxDistance +
                 ", offsetY=" + offsetY +
                 '}';
     }

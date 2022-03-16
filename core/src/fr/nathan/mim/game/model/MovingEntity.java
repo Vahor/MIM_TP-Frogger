@@ -19,10 +19,23 @@ public abstract class MovingEntity extends GameElement {
     }
 
     public void whenOutOfBorder() {
-        if (getRoad().getDirection() == Direction.LEFT)
-            position.x = WorldRenderer.CAMERA_WIDTH;
-        else if (getRoad().getDirection() == Direction.RIGHT)
-            position.x = -getWidth();
+        if (getDirection() == Direction.LEFT) {
+            // On récupère l'élement le plus à droite et on y ajoute l'écart requis
+            GameElement lastElement = getRoad().getLastElement();
+
+            // On ne veut pas tp au centre de l'écran, donc on ne prend que ce qui est après la bordure
+            float x = Math.max(lastElement.getX() + lastElement.getWidth(), WorldRenderer.WORLD_WIDTH);
+
+            position.x = x + getOffsetXToNextEntity();
+        }
+        else if (getDirection() == Direction.RIGHT) {
+            GameElement firstElement = getRoad().getFirstElement();
+
+            float x = Math.min(firstElement.getX(), 0);
+
+            position.x = x - getOffsetXToNextEntity();
+        }
+
     }
 
     protected void updateVelocity() {
