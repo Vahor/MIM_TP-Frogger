@@ -45,7 +45,6 @@ public class Vehicle extends MovingEntity {
 
     @Override
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {
-        System.out.println("Vehicle.onCollide");
         return CollideResult.DEAD;
     }
 
@@ -58,8 +57,8 @@ public class Vehicle extends MovingEntity {
     }
 
     @Override
-    public void afterDeserialization() {
-        super.afterDeserialization();
+    public void afterInitialisation() {
+        super.afterInitialisation();
         updateVelocity();
     }
 

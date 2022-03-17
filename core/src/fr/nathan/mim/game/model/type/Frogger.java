@@ -63,7 +63,6 @@ public class Frogger extends MovingEntity {
 
     @Override
     public void whenOutOfBorder() {
-        System.out.println("Frogger.whenOutOfBorder");
         position.set(
                 MathUtils.clamp(position.x, 0, WorldRenderer.WORLD_WIDTH - getWidth()),
                 MathUtils.clamp(position.y, 0, WorldRenderer.WORLD_HEIGHT - getHeight())

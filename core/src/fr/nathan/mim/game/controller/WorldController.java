@@ -10,7 +10,9 @@ import fr.nathan.mim.game.model.type.World;
 import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.texture.type.FroggerTexture;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WorldController extends Controller {
@@ -102,14 +104,17 @@ public class WorldController extends Controller {
         }
     }
 
-    private void handleBorders(MovingEntity element) {
+    private boolean handleBorders(MovingEntity element) {
         if (element.getDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
                 element.getDirection() == Direction.RIGHT && element.getX() > WorldRenderer.WORLD_WIDTH ||
                 element.getY() > WorldRenderer.WORLD_HEIGHT ||
                 element.getY() < 0
         ) {
             element.whenOutOfBorder();
+            return true;
         }
+
+        return false;
     }
 
     private void handleBordersFrogger(Frogger element) {
@@ -159,27 +164,79 @@ public class WorldController extends Controller {
 
     }
 
-    private void update(GameElement element, float delta) {
+    private boolean update(GameElement element, float delta) {
         element.update(delta);
         if (element instanceof MovingEntity) {
-            handleBorders((MovingEntity) element);
+            return handleBorders((MovingEntity) element);
         }
+        return false;
     }
-
 
     private void updateFrogger(float delta) {
         frogger.update(delta);
         handleBordersFrogger(frogger);
     }
 
+    private void tryToAddElements(Road road) {
+
+        int currentRoadSize = road.getElements().size();
+        int neededRoadSize = road.getEntityCount();
+        if (currentRoadSize < neededRoadSize) {
+            if (road.getDirection() == Direction.RIGHT) {
+                float offsetX = -road.getRandomOffsetX();
+                GameElement firstElement = road.getFirstElement();
+                if (firstElement == null || firstElement.getX() > road.getEntityMinDistance()) {
+
+                    if (firstElement != null && firstElement.getX() < 0)
+                        offsetX = firstElement.getX() + firstElement.getWidth();
+
+                    for (GameElement element : world.generateElement(road)) {
+                        offsetX -= element.getWidth();
+                        element.getPosition().x = offsetX;
+                        road.addElement(element);
+                        element.afterInitialisation();
+
+                    }
+                }
+            }
+            else if (road.getDirection() == Direction.LEFT) {
+                float offsetX = WorldRenderer.WORLD_WIDTH + road.getRandomOffsetX();
+                GameElement lastElement = road.getLastElement();
+                if (lastElement == null || (WorldRenderer.WORLD_WIDTH - lastElement.getX()) > road.getEntityMinDistance()) {
+
+                    if (lastElement != null && (lastElement.getX() + lastElement.getWidth()) > WorldRenderer.WORLD_WIDTH)
+                        offsetX = lastElement.getX() + lastElement.getWidth();
+
+                    for (GameElement element : world.generateElement(road)) {
+                        offsetX += element.getWidth();
+                        element.getPosition().x = offsetX;
+                        road.addElement(element);
+                        element.afterInitialisation();
+
+                    }
+                }
+            }
+
+        }
+    }
+
+    @SuppressWarnings("SlowAbstractSetRemoveAll")
     @Override
     public void update(float delta) {
         handleInput();
 
         for (Road road : world.getRoads()) {
+            List<GameElement> removeElementsList = new ArrayList<GameElement>(road.getEntityCount());
+
             for (GameElement element : road.getElements()) {
-                update(element, delta);
+                boolean toRemove = update(element, delta);
+                if (toRemove)
+                    removeElementsList.add(element);
             }
+
+            road.getElements().removeAll(removeElementsList);
+
+            tryToAddElements(road);
         }
 
         for (GameElement element : world.getElements()) {

@@ -48,6 +48,7 @@ public class TextureFactory {
                 new Animation<TextureRegion>(WorldRenderer.FRAME_DURATION, turtleAtlasSink.findRegions("sink"), Animation.PlayMode.LOOP_REVERSED)
         ));
 
+
         textureMap.put(Tree.class, new TreeTexture(new TextureAtlas(Gdx.files.internal("log/log.pack"))));
         textureMap.put(Vehicle.class, new VehicleTexture(new TextureAtlas(Gdx.files.internal("vehicle/vehicle.pack"))));
         textureMap.put(Fly.class, new FlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));

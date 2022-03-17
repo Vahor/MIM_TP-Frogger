@@ -12,8 +12,6 @@ public abstract class GameElement implements Configurable, Collidable {
 
     private transient Road road;
 
-    private transient float offsetXToNextEntity;
-
     abstract public float getWidth();
     abstract public float getHeight();
 
@@ -39,16 +37,10 @@ public abstract class GameElement implements Configurable, Collidable {
         return position.y;
     }
 
-    public float getRotationOffset(){ // todo faire la rotation sur le png directement ?
+    public float getRotationOffset() { // todo faire la rotation sur le png directement pour le frogger ?
         return 0;
     }
 
-    public float getOffsetXToNextEntity() {
-        return offsetXToNextEntity;
-    }
-    public void setOffsetXToNextEntity(float offsetXToNextEntity) {
-        this.offsetXToNextEntity = offsetXToNextEntity;
-    }
     public float getYWithRoadOffset() {
         return getY() + road.getOffsetY();
     }
@@ -61,7 +53,7 @@ public abstract class GameElement implements Configurable, Collidable {
 
     public void update(float delta)    {}
 
-    public void afterDeserialization() {}
+    public void afterInitialisation() {}
 
     // return true : end game
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {return CollideResult.NOTHING;}

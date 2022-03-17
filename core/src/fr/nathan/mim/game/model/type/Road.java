@@ -44,6 +44,10 @@ public class Road implements Configurable {
         elements.add(element);
     }
 
+    public void removeElement(GameElement element) {
+        elements.remove(element);
+    }
+
     public Set<GameElement> getElements() {
         return elements;
     }
@@ -70,6 +74,11 @@ public class Road implements Configurable {
 
     public float getOffsetY() {
         return offsetY;
+    }
+
+    public float getRandomOffsetX() {
+        // todo on suppose que la différence n'est pas positive, faire le test dans le constructeur de Road
+        return (World.SHARED_RANDOM.nextFloat() * (getEntityMaxDistance() - getEntityMinDistance())) + getEntityMinDistance();
     }
 
     /**
@@ -116,9 +125,9 @@ public class Road implements Configurable {
     }
 
     @Override
-    public void afterDeserialization() {
+    public void afterInitialisation() {
         for (GameElement element : elements) {
-            element.afterDeserialization();
+            element.afterInitialisation();
         }
     }
 

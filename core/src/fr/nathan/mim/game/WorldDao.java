@@ -29,10 +29,10 @@ public class WorldDao {
         String rawJson = fileHandle.readString();
 
         World world = parser.fromJson(World.class, rawJson);
-        world.afterDeserialization();
-        world.getFrogger().afterDeserialization();
+        world.afterInitialisation();
+        world.getFrogger().afterInitialisation();
         for (Configurable element : world.getRoads()) {
-            element.afterDeserialization();
+            element.afterInitialisation();
         }
 
         return world;

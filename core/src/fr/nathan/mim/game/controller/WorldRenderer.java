@@ -57,6 +57,7 @@ public class WorldRenderer extends Controller {
 
         float realWidth = element.getWidth() * pixelsPerUnitX;
         float realHeight = element.getHeight() * pixelsPerUnitY;
+
         batch.draw(region,
                 element.getX() * pixelsPerUnitX,
                 element.getYWithRoadOffset() * pixelsPerUnitY,
@@ -68,6 +69,7 @@ public class WorldRenderer extends Controller {
                 1,
                 element.getDirection().getRotation() + element.getRotationOffset()
         );
+
     }
 
     public void drawElements() {

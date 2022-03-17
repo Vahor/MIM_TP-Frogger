@@ -6,9 +6,9 @@ import fr.nathan.mim.game.model.MovingEntity;
 public class Tree extends MovingEntity {
 
     public enum Type {
-        SMALL(0, 2),
-        MEDIUM(1, 2),
-        LARGE(1, 2),
+        SMALL(1, 1.5f),
+        MEDIUM(2, 2f),
+        LARGE(0, 2.3f),
 
         ;
 
@@ -56,8 +56,8 @@ public class Tree extends MovingEntity {
     }
 
     @Override
-    public void afterDeserialization() {
-        super.afterDeserialization();
+    public void afterInitialisation() {
+        super.afterInitialisation();
         updateVelocity();
     }
 

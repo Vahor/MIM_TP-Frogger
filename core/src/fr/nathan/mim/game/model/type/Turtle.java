@@ -73,8 +73,8 @@ public class Turtle extends MovingEntity {
     }
 
     @Override
-    public void afterDeserialization() {
-        super.afterDeserialization();
+    public void afterInitialisation() {
+        super.afterInitialisation();
         onSpawnEnd();
     }
 

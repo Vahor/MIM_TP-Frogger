@@ -41,54 +41,39 @@ public class World implements Configurable {
         return elements;
     }
 
+    public List<GameElement> generateElement(Road road) {
+        List<GameElement> elements = new ArrayList<GameElement>(3);
+        if (road.getType() == Road.Type.WATER) {
+            if (SHARED_RANDOM.nextBoolean()) {
+                elements.add(new Tree(Tree.Type.random()));
+            }
+            else {
+                int diff = turtleConfiguration.getMaxGroupSize() - turtleConfiguration.getMinGroupSize();
+                int groupSize = turtleConfiguration.getMinGroupSize();
+                if(diff != 0)
+                    groupSize += SHARED_RANDOM.nextInt(diff);
+
+                for (int i = 0; i < groupSize; i++) {
+                    elements.add(new Turtle(turtleConfiguration));
+                }
+            }
+        }
+
+        else if (road.getType() == Road.Type.ROAD) {
+            Vehicle vehicle = new Vehicle();
+            vehicle.setType(Vehicle.Type.random());
+            elements.add(vehicle);
+        }
+
+        return elements;
+    }
+
     @Override
-    public void afterDeserialization() {
+    public void afterInitialisation() {
         if (seed != 0)
             SHARED_RANDOM = new Random(seed);
         else
             SHARED_RANDOM = new Random();
-
-        // Ajout des elements sur les routes
-        for (Road road : roads) {
-            float previousOffsetX = 0;
-            float offsetX = 0;
-            for (int i = 0; i < road.getEntityCount(); i++) {
-                GameElement element = null;
-
-
-                if (road.getType() == Road.Type.WATER) {
-                    if (SHARED_RANDOM.nextBoolean()) {
-                        element = new Tree(Tree.Type.random());
-                    }
-                    else {
-                        element = new Turtle(turtleConfiguration);
-                    }
-                }
-
-                if (road.getType() == Road.Type.ROAD) {
-                    Vehicle vehicle = new Vehicle();
-                    vehicle.setType(Vehicle.Type.random());
-                    element = vehicle;
-                }
-
-
-                if (element != null) {
-                    offsetX += element.getWidth();
-                    element.getPosition().x = road.getDirection() == Direction.LEFT ? offsetX : -offsetX;
-                    element.setOffsetXToNextEntity(offsetX - previousOffsetX);
-
-                    road.addElement(element);
-                }
-
-
-                // todo on suppose que la différence n'est pas positive, faire le test dans le constructeur de Road
-                // min <= max
-                previousOffsetX = offsetX;
-                offsetX += (SHARED_RANDOM.nextFloat() * (road.getEntityMaxDistance() - road.getEntityMinDistance())) + road.getEntityMinDistance();
-
-            }
-
-        }
 
         frogger = new Frogger(froggerConfiguration);
         frogger.getPosition().set(
@@ -105,16 +90,16 @@ public class World implements Configurable {
     public void demoWorld() {
 
         froggerConfiguration = new FroggerConfiguration(.1f, 1);
-        turtleConfiguration  = new TurtleConfiguration(3, 3f);
+        turtleConfiguration  = new TurtleConfiguration(3, 3f, 1, 3);
         flyConfiguration     = new FlyConfiguration(3, 3f, new ArrayList<Vector2>(Arrays.asList(
-                new Vector2(0,12),
-                new Vector2(2,12),
-                new Vector2(4,12),
-                new Vector2(6,12),
-                new Vector2(8,12)
+                new Vector2(0, 12),
+                new Vector2(2, 12),
+                new Vector2(4, 12),
+                new Vector2(6, 12),
+                new Vector2(8, 12)
         )));
 
-        roads   = new HashSet<Road>();
+        roads = new HashSet<Road>();
 
         frogger = new Frogger(froggerConfiguration);
         frogger.getPosition().set(4, .20f);
