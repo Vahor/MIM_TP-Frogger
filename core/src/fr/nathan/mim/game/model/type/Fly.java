@@ -14,12 +14,10 @@ public class Fly extends GameElement {
     private transient float stateTime = 0;
 
     private final float changeSpotDelay;
-    private final float stayOnSportDelay;
     private final List<Vector2> positions;
 
     public Fly(FlyConfiguration flyConfiguration) {
         this.changeSpotDelay  = flyConfiguration.getChangeSpotDelay();
-        this.stayOnSportDelay = flyConfiguration.getStayOnSportDelay();
         this.positions        = flyConfiguration.getPositions();
     }
 
@@ -53,7 +51,7 @@ public class Fly extends GameElement {
         stateTime += delta;
         if (changeSpotDelay > 0 && stateTime > changeSpotDelay) {
             getPosition().set(getNextPosition());
-            stateTime = -stayOnSportDelay;
+            stateTime = 0;
         }
     }
 

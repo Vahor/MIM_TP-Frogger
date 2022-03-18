@@ -1,6 +1,7 @@
 package fr.nathan.mim.game.model;
 
 import com.badlogic.gdx.math.Vector2;
+import fr.nathan.mim.game.model.type.World;
 
 public abstract class MovingEntity extends GameElement {
 
@@ -16,7 +17,7 @@ public abstract class MovingEntity extends GameElement {
         position.add(velocity.cpy().scl(delta));
     }
 
-    public void whenOutOfBorder() {}
+    public void whenOutOfBorder(World world) {}
 
     protected void updateVelocity() {
         getVelocity().set(

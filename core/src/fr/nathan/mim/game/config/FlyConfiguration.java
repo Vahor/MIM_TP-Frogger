@@ -7,7 +7,6 @@ import java.util.List;
 public class FlyConfiguration {
 
     private float changeSpotDelay;
-    private float stayOnSportDelay;
 
     private List<Vector2> positions;
 
@@ -15,18 +14,13 @@ public class FlyConfiguration {
     public FlyConfiguration() {
     }
 
-    public FlyConfiguration(float changeSpotDelay, float stayOnSportDelay, List<Vector2> positions) {
-        this.changeSpotDelay  = changeSpotDelay;
-        this.stayOnSportDelay = stayOnSportDelay;
-        this.positions        = positions;
+    public FlyConfiguration(float changeSpotDelay, List<Vector2> positions) {
+        this.changeSpotDelay = changeSpotDelay;
+        this.positions       = positions;
     }
 
     public float getChangeSpotDelay() {
         return changeSpotDelay;
-    }
-
-    public float getStayOnSportDelay() {
-        return stayOnSportDelay;
     }
 
     public List<Vector2> getPositions() {

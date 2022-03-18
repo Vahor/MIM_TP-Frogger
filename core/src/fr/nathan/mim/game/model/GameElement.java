@@ -29,10 +29,10 @@ public abstract class GameElement implements Configurable, Collidable {
     public void setRoad(Road road) {
         this.road = road;
     }
+
     public float getX() {
         return position.x;
     }
-
     public float getY() {
         return position.y;
     }
@@ -55,7 +55,7 @@ public abstract class GameElement implements Configurable, Collidable {
 
     public void afterInitialisation() {}
 
-    // return true : end game
+    // return DEAD : end game
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {return CollideResult.NOTHING;}
 
     public CollideResult handleCollision(MovingEntity element, float delta) {

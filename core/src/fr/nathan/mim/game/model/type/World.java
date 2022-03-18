@@ -7,7 +7,6 @@ import fr.nathan.mim.game.config.Configurable;
 import fr.nathan.mim.game.config.FlyConfiguration;
 import fr.nathan.mim.game.config.FroggerConfiguration;
 import fr.nathan.mim.game.config.TurtleConfiguration;
-import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 
@@ -16,6 +15,10 @@ import java.util.*;
 public class World implements Configurable {
 
     private long seed = -1;
+    private boolean debug = false;
+
+    private float width;
+    private float height;
 
     private transient Frogger frogger;
 
@@ -41,6 +44,21 @@ public class World implements Configurable {
         return elements;
     }
 
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
     public List<GameElement> generateElement(Road road) {
         List<GameElement> elements = new ArrayList<GameElement>(3);
         if (road.getType() == Road.Type.WATER) {
@@ -50,7 +68,7 @@ public class World implements Configurable {
             else {
                 int diff = turtleConfiguration.getMaxGroupSize() - turtleConfiguration.getMinGroupSize();
                 int groupSize = turtleConfiguration.getMinGroupSize();
-                if(diff != 0)
+                if (diff != 0)
                     groupSize += SHARED_RANDOM.nextInt(diff);
 
                 for (int i = 0; i < groupSize; i++) {
@@ -60,9 +78,7 @@ public class World implements Configurable {
         }
 
         else if (road.getType() == Road.Type.ROAD) {
-            Vehicle vehicle = new Vehicle();
-            vehicle.setType(Vehicle.Type.random());
-            elements.add(vehicle);
+            elements.add(new Vehicle(Vehicle.Type.random()));
         }
 
         return elements;
@@ -76,10 +92,7 @@ public class World implements Configurable {
             SHARED_RANDOM = new Random();
 
         frogger = new Frogger(froggerConfiguration);
-        frogger.getPosition().set(
-                (WorldRenderer.WORLD_WIDTH - frogger.getWidth()) / 2,
-                .15f
-        );
+        frogger.getPosition().set(froggerConfiguration.getStartingPosition());
 
         Fly fly = new Fly(flyConfiguration);
         fly.getPosition().set(fly.getNextPosition());
@@ -89,14 +102,20 @@ public class World implements Configurable {
 
     public void demoWorld() {
 
-        froggerConfiguration = new FroggerConfiguration(.1f, 1);
+        debug  = true;
+        width  = 8;
+        height = 13.5f;
+
+        froggerConfiguration = new FroggerConfiguration(.1f, 1, new Vector2(
+                width / 2 - .25f,
+                .15f));
         turtleConfiguration  = new TurtleConfiguration(3, 3f, 1, 3);
-        flyConfiguration     = new FlyConfiguration(3, 3f, new ArrayList<Vector2>(Arrays.asList(
-                new Vector2(0, 12),
-                new Vector2(2, 12),
-                new Vector2(4, 12),
-                new Vector2(6, 12),
-                new Vector2(8, 12)
+        flyConfiguration     = new FlyConfiguration(1, new ArrayList<Vector2>(Arrays.asList(
+                new Vector2(0.3f, 12.25f),
+                new Vector2(2, 12.25f),
+                new Vector2(3.8f, 12.25f),
+                new Vector2(5.6f, 12.25f),
+                new Vector2(7.3f, 12.25f)
         )));
 
         roads = new HashSet<Road>();
@@ -109,14 +128,14 @@ public class World implements Configurable {
         for (int i = 1; i < 6; i++) {
             Road road = new Road(SHARED_RANDOM.nextFloat() + .5f,
                     SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT,
-                    SHARED_RANDOM.nextInt(3) + 1,
+                    SHARED_RANDOM.nextInt(3) + 2,
                     SHARED_RANDOM.nextInt(3) + 1,
                     SHARED_RANDOM.nextInt(2) + 3,
-                    i,
+                    i + .1f,
                     Road.Type.ROAD);
 
             if (SHARED_RANDOM.nextInt(2) == 0) {
-                road.addElement(new Vehicle());
+                road.addElement(new Vehicle(Vehicle.Type.random()));
             }
             roads.add(road);
         }
@@ -124,10 +143,10 @@ public class World implements Configurable {
         for (int i = 7; i < 12; i++) {
             Road road = new Road(SHARED_RANDOM.nextFloat() + .5f,
                     SHARED_RANDOM.nextBoolean() ? Direction.RIGHT : Direction.LEFT,
-                    SHARED_RANDOM.nextInt(3) + 1,
+                    SHARED_RANDOM.nextInt(3) + 2,
                     SHARED_RANDOM.nextInt(3) + 1,
                     SHARED_RANDOM.nextInt(2) + 3,
-                    i,
+                    i + .1f,
                     Road.Type.WATER);
 
             MovingEntity entity;

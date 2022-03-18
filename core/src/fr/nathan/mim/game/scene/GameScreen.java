@@ -1,20 +1,20 @@
 package fr.nathan.mim.game.scene;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import fr.nathan.mim.game.WorldDao;
 import fr.nathan.mim.game.controller.WorldController;
 import fr.nathan.mim.game.controller.WorldRenderer;
+import fr.nathan.mim.game.input.InputHandler;
 import fr.nathan.mim.game.model.type.World;
 
-public class GameScreen implements Screen, InputProcessor {
+public class GameScreen implements Screen {
 
     private final WorldController worldController;
     private final WorldRenderer worldRenderer;
+    private final InputHandler inputHandler;
 
     public GameScreen(Batch batch) {
         WorldDao worldDao = new WorldDao();
@@ -22,19 +22,25 @@ public class GameScreen implements Screen, InputProcessor {
 //        world = new World();
 //        world.demoWorld();
         world = worldDao.get("config.json");
-//        worldDao.save("config.json", world);
+ //      worldDao.save("config.json", world);
 
         worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world);
+        inputHandler    = new InputHandler(worldController);
 
-        Gdx.input.setInputProcessor(this);
+        // Avance rapide de 10s
+        // todo placer les elements au centre directement
+        for (int i = 0; i < 10; i++) {
+            worldController.update(1f);
+        }
+        worldRenderer.update(1);
+
+        Gdx.input.setInputProcessor(inputHandler);
 
     }
 
     @Override
-    public void show() {
-
-    }
+    public void show() {}
 
     @Override
     public void render(float delta) {
@@ -43,6 +49,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         worldRenderer.update(delta);
         worldController.update(delta);
+        inputHandler.update(delta);
     }
 
     @Override
@@ -59,54 +66,4 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {}
 
-    @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.LEFT)
-            worldController.onLeftPressed();
-        if (keycode == Input.Keys.RIGHT)
-            worldController.onRightPressed();
-        if (keycode == Input.Keys.UP)
-            worldController.onUpPressed();
-        if (keycode == Input.Keys.DOWN)
-            worldController.onDownPressed();
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.LEFT)
-            worldController.onLeftReleased();
-        if (keycode == Input.Keys.RIGHT)
-            worldController.onRightReleased();
-        if (keycode == Input.Keys.UP)
-            worldController.onUpReleased();
-        if (keycode == Input.Keys.DOWN)
-            worldController.onDownReleased();
-        return true;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
 }

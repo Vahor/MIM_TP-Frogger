@@ -35,6 +35,8 @@ public class WorldController extends Controller {
         }
     }
 
+    public World getWorld() {return world;}
+
     public void onLeftPressed() {
         pressedKeys.put(Keys.LEFT, true);
     }
@@ -106,11 +108,11 @@ public class WorldController extends Controller {
 
     private boolean handleBorders(MovingEntity element) {
         if (element.getDirection() == Direction.LEFT && element.getX() < -element.getWidth() ||
-                element.getDirection() == Direction.RIGHT && element.getX() > WorldRenderer.WORLD_WIDTH ||
-                element.getY() > WorldRenderer.WORLD_HEIGHT ||
+                element.getDirection() == Direction.RIGHT && element.getX() > world.getWidth() ||
+                element.getY() > world.getHeight() ||
                 element.getY() < 0
         ) {
-            element.whenOutOfBorder();
+            element.whenOutOfBorder(world);
             return true;
         }
 
@@ -119,11 +121,11 @@ public class WorldController extends Controller {
 
     private void handleBordersFrogger(Frogger element) {
         if (element.getX() < 0 ||
-                element.getX() > WorldRenderer.WORLD_WIDTH - element.getWidth() ||
-                element.getY() > WorldRenderer.WORLD_HEIGHT - element.getHeight() ||
+                element.getX() > world.getWidth() - element.getWidth() ||
+                element.getY() > world.getHeight() - element.getHeight() ||
                 element.getY() < 0
         ) {
-            element.whenOutOfBorder();
+            element.whenOutOfBorder(world);
         }
     }
 
@@ -181,42 +183,56 @@ public class WorldController extends Controller {
 
         int currentRoadSize = road.getElements().size();
         int neededRoadSize = road.getEntityCount();
+
         if (currentRoadSize < neededRoadSize) {
             if (road.getDirection() == Direction.RIGHT) {
-                float offsetX = -road.getRandomOffsetX();
-                GameElement firstElement = road.getFirstElement();
-                if (firstElement == null || firstElement.getX() > road.getEntityMinDistance()) {
+                float offsetX;
 
+                GameElement firstElement = road.getFirstElement();
+                if (firstElement == null ||
+                        firstElement.getX() > road.getEntityMinDistance()) {
+
+                    // Min entre 0 et firstElement point à gauche
                     if (firstElement != null && firstElement.getX() < 0)
-                        offsetX = firstElement.getX() + firstElement.getWidth();
+                        offsetX = firstElement.getX();
+                    else
+                        offsetX = 0;
+
+                    // todo le - road.getEntityMin n'est pas bon dans tous les cas, il faudrait le faire que dans un seul if
+                    //  Si l'entité est hors de l'écran, on lui donne l'offset entier
+                    //  Si elle est sur l'ecran, on sait qu'il y a déjà la distance minimale grâce au if, donc on peut faire le -
+                    offsetX -= (road.getRandomOffsetX() - road.getEntityMinDistance());
 
                     for (GameElement element : world.generateElement(road)) {
                         offsetX -= element.getWidth();
                         element.getPosition().x = offsetX;
                         road.addElement(element);
                         element.afterInitialisation();
-
                     }
                 }
             }
             else if (road.getDirection() == Direction.LEFT) {
-                float offsetX = WorldRenderer.WORLD_WIDTH + road.getRandomOffsetX();
+                float offsetX;
                 GameElement lastElement = road.getLastElement();
-                if (lastElement == null || (WorldRenderer.WORLD_WIDTH - lastElement.getX()) > road.getEntityMinDistance()) {
+                if (lastElement == null ||
+                        (world.getWidth() - (lastElement.getX() - lastElement.getWidth())) > road.getEntityMinDistance()) {
 
-                    if (lastElement != null && (lastElement.getX() + lastElement.getWidth()) > WorldRenderer.WORLD_WIDTH)
+                    // Max entre world.width et lastElement point à droite
+                    if (lastElement != null && (lastElement.getX() + lastElement.getWidth()) > world.getWidth())
                         offsetX = lastElement.getX() + lastElement.getWidth();
+                    else
+                        offsetX = world.getWidth();
+
+                    offsetX += (road.getRandomOffsetX() - road.getEntityMinDistance());
 
                     for (GameElement element : world.generateElement(road)) {
                         offsetX += element.getWidth();
                         element.getPosition().x = offsetX;
                         road.addElement(element);
                         element.afterInitialisation();
-
                     }
                 }
             }
-
         }
     }
 

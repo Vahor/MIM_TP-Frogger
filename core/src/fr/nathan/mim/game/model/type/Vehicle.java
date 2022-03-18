@@ -31,7 +31,11 @@ public class Vehicle extends MovingEntity {
         }
     }
 
-    private Type type = Type.RED;
+    private Type type;
+
+    public Vehicle(Type type) {
+        this.type = type;
+    }
 
     @Override
     public float getHeight() {

@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.FroggerConfiguration;
-import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.MovingEntity;
 
 public class Frogger extends MovingEntity {
@@ -62,10 +61,10 @@ public class Frogger extends MovingEntity {
     }
 
     @Override
-    public void whenOutOfBorder() {
+    public void whenOutOfBorder(World world) {
         position.set(
-                MathUtils.clamp(position.x, 0, WorldRenderer.WORLD_WIDTH - getWidth()),
-                MathUtils.clamp(position.y, 0, WorldRenderer.WORLD_HEIGHT - getHeight())
+                MathUtils.clamp(position.x, 0, world.getWidth() - getWidth()),
+                MathUtils.clamp(position.y, 0, world.getHeight() - getHeight())
         );
         onJumpEnd();
     }
