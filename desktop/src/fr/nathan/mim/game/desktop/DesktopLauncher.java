@@ -12,7 +12,7 @@ public class DesktopLauncher {
         config.title = "Frogger";
 
         config.width  = 600;
-        config.height = 690;
+        config.height = 730;
 
         new LwjglApplication(new Client(), config);
     }

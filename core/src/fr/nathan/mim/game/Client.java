@@ -3,7 +3,7 @@ package fr.nathan.mim.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import fr.nathan.mim.game.scene.GameScreen;
+import fr.nathan.mim.game.screen.GameScreen;
 
 public class Client extends Game {
 

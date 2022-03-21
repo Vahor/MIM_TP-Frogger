@@ -14,13 +14,18 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
     private final WorldController worldController;
     private final World world;
 
-    private final float MIN_TOUCH_DELAY = .3f;
+    private final float MIN_TOUCH_DELAY = .25f;
     private float touchDelay = 0;
+
+    private Vector2 center;
 
     public InputHandler(WorldController worldController) {
         this.worldController = worldController;
         this.world           = worldController.getWorld();
+    }
 
+    public void resize(float width, float height) {
+        center = new Vector2(width / 2, height / 2);
     }
 
     public void update(float delta) {
@@ -31,7 +36,7 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
                 Vector2 currentPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                 // todo sauvegarder la variable de Vector2d du centre de l'écran ? Avec une méthode dans resize ?
                 handleMovement(
-                        new Vector2(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f),
+                        center,
                         currentPoint
                 );
             }
@@ -49,8 +54,14 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
         if (keycode == Input.Keys.DOWN)
             worldController.onDownPressed();
 
-        if(keycode == Input.Keys.D)
+        if (keycode == Input.Keys.D)
             world.setDebug(!world.isDebug());
+        if (keycode == Input.Keys.G)
+            world.setGameOver(!world.isGameOver());
+        if (keycode == Input.Keys.ESCAPE)
+            world.setPause(!world.isPause());
+        if (keycode == Input.Keys.C)
+            world.setCheat(!world.isCheat());
         return true;
     }
 
@@ -69,8 +80,13 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
+        if (world.isGameOver()) {
+            world.init();
+            return true;
+        }
+        if (world.isPause()) return false;
         handleMovement(
-                new Vector2(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f),
+                center,
                 new Vector2(x, y)
         );
         return true;

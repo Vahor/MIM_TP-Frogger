@@ -41,6 +41,6 @@ public class WorldDao {
     public void save(String path, World world) {
 
         FileHandle fileHandle = Gdx.files.external(path);
-        fileHandle.writeString(parser.prettyPrint(world), false); // todo toString à la place de prettyPrint
+        fileHandle.writeString(parser.prettyPrint(world), false); // todo toJson à la place de prettyPrint
     }
 }

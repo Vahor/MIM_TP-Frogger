@@ -3,6 +3,7 @@ package fr.nathan.mim.game.texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import fr.nathan.mim.game.controller.WorldRenderer;
@@ -27,9 +28,13 @@ public class TextureFactory {
     }
 
     private final Texture background;
+    private final BitmapFont font;
 
     public TextureFactory() {
         background = new Texture(Gdx.files.internal("background.png"));
+        font       = new BitmapFont(Gdx.files.internal("font/font.fnt"));
+        font.getData().setScale(.45f);
+        font.setUseIntegerPositions(false);
 
         // Frogger
         TextureAtlas froggerAtlas = new TextureAtlas(Gdx.files.internal("frogger/frogger.atlas"));
@@ -67,5 +72,9 @@ public class TextureFactory {
 
     public Texture getBackground() {
         return background;
+    }
+
+    public BitmapFont getFont() {
+        return font;
     }
 }

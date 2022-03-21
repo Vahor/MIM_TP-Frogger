@@ -1,6 +1,7 @@
 package fr.nathan.mim.game.model.type;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.FroggerConfiguration;
@@ -9,7 +10,7 @@ import fr.nathan.mim.game.model.MovingEntity;
 public class Frogger extends MovingEntity {
 
     public enum State {
-        IDLE, JUMPING, DYING
+        IDLE, JUMPING
     }
 
     private transient State state = State.IDLE;
@@ -20,10 +21,15 @@ public class Frogger extends MovingEntity {
 
     private final float jumpDelay;
     private final float jumpDistance;
+    private final Vector2 startingPosition;
+
+    private int remainingLives;
 
     public Frogger(FroggerConfiguration froggerConfiguration) {
-        this.jumpDelay    = froggerConfiguration.getJumpDelay();
-        this.jumpDistance = froggerConfiguration.getJumpDistance();
+        this.jumpDelay      = froggerConfiguration.getJumpDelay();
+        this.jumpDistance   = froggerConfiguration.getJumpDistance();
+        this.remainingLives = froggerConfiguration.getTotalLives();
+        this.startingPosition = froggerConfiguration.getStartingPosition();
     }
 
     public State getState() {return state;}
@@ -43,7 +49,12 @@ public class Frogger extends MovingEntity {
     public float getJumpDistance() {
         return jumpDistance;
     }
-
+    public Vector2 getStartingPosition() {
+        return startingPosition;
+    }
+    public int getRemainingLives() {
+        return remainingLives;
+    }
     @Override
     public float getYWithRoadOffset() {
         return getY();
@@ -91,6 +102,16 @@ public class Frogger extends MovingEntity {
 
     public float getStateTime() {
         return stateTime;
+    }
+
+    /**
+     *
+     * @return True si la partie continue
+     */
+    public boolean onDied() {
+        remainingLives--;
+        System.out.println("remainingLives = " + remainingLives);
+        return remainingLives > 0;
     }
 
     @Override

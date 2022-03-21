@@ -10,7 +10,19 @@ import java.util.Set;
 public class Road implements Configurable {
 
     public enum Type {
-        ROAD, WATER, UNKNOWN
+        ROAD(false),
+        LOG(true),
+        TURTLE(true),
+        UNKNOWN(false);
+        final boolean dangerous;
+
+        Type(boolean dangerous) {
+            this.dangerous = dangerous;
+        }
+
+        public boolean isDangerous() {
+            return dangerous;
+        }
     }
 
     private transient final Set<GameElement> elements = new HashSet<GameElement>(4);
@@ -77,7 +89,6 @@ public class Road implements Configurable {
     }
 
     public float getRandomOffsetX() {
-        // todo on suppose que la différence n'est pas positive, faire le test dans le constructeur de Road
         return (World.SHARED_RANDOM.nextFloat() * (getEntityMaxDistance() - getEntityMinDistance())) + getEntityMinDistance();
     }
 
@@ -126,6 +137,11 @@ public class Road implements Configurable {
 
     @Override
     public void afterInitialisation() {
+
+        if (entityMinDistance > entityMaxDistance) {
+            throw new RuntimeException("Road init : entityMinDistance > entityMaxDistance");
+        }
+
         for (GameElement element : elements) {
             element.afterInitialisation();
         }

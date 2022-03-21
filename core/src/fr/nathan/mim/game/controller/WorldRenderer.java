@@ -1,14 +1,16 @@
 package fr.nathan.mim.game.controller;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import fr.nathan.mim.game.controller.renderer.DebugRenderer;
 import fr.nathan.mim.game.model.GameElement;
+import fr.nathan.mim.game.model.type.Frogger;
 import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
 import fr.nathan.mim.game.texture.TextureFactory;
@@ -20,8 +22,9 @@ public class WorldRenderer extends Controller {
 
     OrthographicCamera camera;
     Viewport viewport;
-    ShapeRenderer shapeRenderer;
-    BitmapFont font = new BitmapFont();
+
+    DebugRenderer debugRenderer;
+    GlyphLayout glyphLayout = new GlyphLayout();
 
     private float pixelsPerUnitX;
     private float pixelsPerUnitY;
@@ -31,12 +34,21 @@ public class WorldRenderer extends Controller {
         camera   = new OrthographicCamera(world.getWidth(), world.getHeight());
         viewport = new FitViewport(600, 690, camera);
         viewport.apply();
-        shapeRenderer = new ShapeRenderer();
+
+        debugRenderer = new DebugRenderer(this);
+
     }
 
-    public void setSize(float width, float height) {
-        viewport.update((int) width, (int) height);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+    public float getPixelsPerUnitX() {
+        return pixelsPerUnitX;
+    }
+    public float getPixelsPerUnitY() {
+        return pixelsPerUnitY;
+    }
+
+    public void resize(float width, float height) {
+        viewport.update((int) width, (int) height, true);
+
         pixelsPerUnitX = camera.viewportWidth / world.getWidth();
         pixelsPerUnitY = camera.viewportHeight / world.getHeight();
     }
@@ -87,100 +99,58 @@ public class WorldRenderer extends Controller {
         }
     }
 
+    public void drawHUD() {
+        BitmapFont font = TextureFactory.getInstance().getFont();
+        Frogger frogger = world.getFrogger();
+
+        font.draw(batch, "Nombre de vies : " + frogger.getRemainingLives(),
+                0,
+                14 * pixelsPerUnitY);
+
+
+        glyphLayout.setText(font, "Temps restant : " + world.getCurrentTime().intValue() + "s");
+        font.draw(batch, glyphLayout,
+                (world.getWidth() * pixelsPerUnitX - glyphLayout.width),
+                14 * pixelsPerUnitY);
+
+
+        glyphLayout.setText(font, "FPS : " + Gdx.graphics.getFramesPerSecond());
+        font.draw(batch, glyphLayout,
+                (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
+                14 * pixelsPerUnitY);
+    }
+
+    public void drawGameOver() {
+        BitmapFont font = TextureFactory.getInstance().getFont();
+        glyphLayout.setText(font, "GAME OVER");
+        font.draw(batch, glyphLayout,
+                (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
+                (world.getHeight() * pixelsPerUnitY) / 2);
+
+        glyphLayout.setText(font, "CLIQUER POUR RECOMMENCER");
+        font.draw(batch, glyphLayout,
+                (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
+                ((world.getHeight() - 3) * pixelsPerUnitY) / 2);
+    }
+
     @Override
     public void update(float delta) {
         batch.begin();
 
-        drawBackground();
-        drawElements();
+        if (world.isGameOver()) {
+            drawGameOver();
+        }
+        else {
+            drawBackground();
+            drawElements();
 
-        drawElement(world.getFrogger());
+            drawElement(world.getFrogger());
+            drawHUD();
+        }
 
         batch.end();
 
-        if (world.isDebug()) {
-            shapeRenderer.setColor(Color.WHITE);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            // Ajout des lignes verticales
-            for (int col = 0; col < world.getWidth(); col++) {
-                shapeRenderer.line(
-                        col * pixelsPerUnitX,
-                        0,
-                        col * pixelsPerUnitX,
-                        world.getHeight() * pixelsPerUnitY
-                );
-            }
-
-            // Ajout des lignes horizontales
-            for (int row = 0; row < world.getHeight(); row++) {
-                shapeRenderer.line(
-                        0,
-                        row * pixelsPerUnitY,
-                        world.getWidth() * pixelsPerUnitX,
-                        row * pixelsPerUnitY
-                );
-            }
-
-            // Zones de click
-            shapeRenderer.setColor(Color.ORANGE);
-            // Diagonale Haut Gauche -> Bas Droit
-            shapeRenderer.line(
-                    0,
-                    world.getHeight() * pixelsPerUnitY,
-                    world.getWidth() * pixelsPerUnitX,
-                    0
-            );
-
-            // Diagonale Haut Droit -> Bas Gauche
-            shapeRenderer.line(
-                    world.getWidth() * pixelsPerUnitX,
-                    world.getHeight() * pixelsPerUnitY,
-                    0,
-                    0
-            );
-
-
-            shapeRenderer.end();
-
-
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-            batch.begin();
-            // Informations sur les routes
-            for (Road road : world.getRoads()) {
-                font.draw(batch,
-                        road.getType().name() + " - " + road.getDirection().name(),
-                        10,
-                        (road.getOffsetY() + .2f) * pixelsPerUnitY);
-                font.draw(batch,
-                        road.getOffsetY() +
-                                " - [" + road.getEntityMinDistance() + ", " + road.getEntityMaxDistance() + "]"
-                                + " - " + road.getElements().size() + "/" + road.getEntityCount(),
-                        10,
-                        (road.getOffsetY() + .5f) * pixelsPerUnitY);
-
-                for (GameElement element : road.getElements()) {
-
-                    shapeRenderer.setColor(Color.PURPLE);
-                    shapeRenderer.rect(
-                            element.getX() * pixelsPerUnitX,
-                            element.getYWithRoadOffset() * pixelsPerUnitY,
-                            .1f * pixelsPerUnitX,
-                            element.getHeight() * pixelsPerUnitY);
-
-                    shapeRenderer.setColor(Color.CYAN);
-                    shapeRenderer.rect(
-                            (element.getX() + element.getWidth()) * pixelsPerUnitX,
-                            element.getYWithRoadOffset() * pixelsPerUnitY,
-                            .1f * pixelsPerUnitX,
-                            element.getHeight() * pixelsPerUnitY);
-                }
-            }
-
-            batch.end();
-            shapeRenderer.end();
-
-        }
+        debugRenderer.update(delta);
 
     }
 }

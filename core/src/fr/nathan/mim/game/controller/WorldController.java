@@ -10,10 +10,10 @@ import fr.nathan.mim.game.model.type.World;
 import fr.nathan.mim.game.texture.TextureFactory;
 import fr.nathan.mim.game.texture.type.FroggerTexture;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class WorldController extends Controller {
 
@@ -23,12 +23,8 @@ public class WorldController extends Controller {
 
     private final Map<Keys, Boolean> pressedKeys = new HashMap<Keys, Boolean>(4, 1);
 
-    private final Frogger frogger;
-
     public WorldController(World world) {
         super(world, null);
-
-        frogger = world.getFrogger();
 
         for (Keys value : Keys.values()) {
             pressedKeys.put(value, false);
@@ -78,6 +74,7 @@ public class WorldController extends Controller {
     }
 
     private void handleInput() {
+        Frogger frogger = world.getFrogger();
         if (frogger.getState() != Frogger.State.IDLE) return;
 
         if (isLeftPressed()) {
@@ -129,7 +126,19 @@ public class WorldController extends Controller {
         }
     }
 
+    private void onFroggerDie() {
+        if (world.isCheat()) return;
+        Frogger frogger = world.getFrogger();
+        boolean canContinue = frogger.onDied();
+        if (!canContinue) {
+            world.setGameOver(true);
+        }
+        frogger.setDirection(Direction.UP);
+        frogger.getPosition().set(frogger.getStartingPosition());
+    }
+
     private void handleCollisions(float delta) {
+        Frogger frogger = world.getFrogger();
         if (frogger.getState() != Frogger.State.IDLE) return;
 
         for (Road road : world.getRoads()) {
@@ -139,6 +148,7 @@ public class WorldController extends Controller {
                 if (collideResult == CollideResult.RIDE) return;
                 if (collideResult == CollideResult.DEAD) {
                     System.out.println(":( element");
+                    onFroggerDie();
                     return;
                 }
             }
@@ -149,6 +159,7 @@ public class WorldController extends Controller {
             if (collideResult == CollideResult.MISS) continue;
             if (collideResult == CollideResult.DEAD) {
                 System.out.println(":( item");
+                onFroggerDie();
                 return;
             }
         }
@@ -156,9 +167,10 @@ public class WorldController extends Controller {
         // Handle water
 
         for (Road road : world.getRoads()) {
-            if (road.getType() == Road.Type.WATER) {
+            if (road.getType().isDangerous()) {
                 if (road.collideWith(frogger)) {
                     System.out.println(":( water");
+                    onFroggerDie();
                     break;
                 }
             }
@@ -175,6 +187,7 @@ public class WorldController extends Controller {
     }
 
     private void updateFrogger(float delta) {
+        Frogger frogger = world.getFrogger();
         frogger.update(delta);
         handleBordersFrogger(frogger);
     }
@@ -185,23 +198,25 @@ public class WorldController extends Controller {
         int neededRoadSize = road.getEntityCount();
 
         if (currentRoadSize < neededRoadSize) {
+            float offsetX;
             if (road.getDirection() == Direction.RIGHT) {
-                float offsetX;
 
                 GameElement firstElement = road.getFirstElement();
                 if (firstElement == null ||
                         firstElement.getX() > road.getEntityMinDistance()) {
 
                     // Min entre 0 et firstElement point à gauche
-                    if (firstElement != null && firstElement.getX() < 0)
+                    if (firstElement != null && firstElement.getX() < 0) {
                         offsetX = firstElement.getX();
+                    }
                     else
                         offsetX = 0;
+
+                    offsetX -= (road.getRandomOffsetX() - road.getEntityMinDistance());
 
                     // todo le - road.getEntityMin n'est pas bon dans tous les cas, il faudrait le faire que dans un seul if
                     //  Si l'entité est hors de l'écran, on lui donne l'offset entier
                     //  Si elle est sur l'ecran, on sait qu'il y a déjà la distance minimale grâce au if, donc on peut faire le -
-                    offsetX -= (road.getRandomOffsetX() - road.getEntityMinDistance());
 
                     for (GameElement element : world.generateElement(road)) {
                         offsetX -= element.getWidth();
@@ -212,56 +227,76 @@ public class WorldController extends Controller {
                 }
             }
             else if (road.getDirection() == Direction.LEFT) {
-                float offsetX;
                 GameElement lastElement = road.getLastElement();
                 if (lastElement == null ||
-                        (world.getWidth() - (lastElement.getX() - lastElement.getWidth())) > road.getEntityMinDistance()) {
+                        (world.getWidth() - (lastElement.getX() + lastElement.getWidth())) > road.getEntityMinDistance()) {
 
                     // Max entre world.width et lastElement point à droite
-                    if (lastElement != null && (lastElement.getX() + lastElement.getWidth()) > world.getWidth())
-                        offsetX = lastElement.getX() + lastElement.getWidth();
-                    else
+                    if (lastElement != null && (lastElement.getX() + lastElement.getWidth()) > world.getWidth()) {
+                        offsetX = lastElement.getX();
+                    }
+                    else {
                         offsetX = world.getWidth();
-
+                    }
                     offsetX += (road.getRandomOffsetX() - road.getEntityMinDistance());
 
+
                     for (GameElement element : world.generateElement(road)) {
-                        offsetX += element.getWidth();
                         element.getPosition().x = offsetX;
                         road.addElement(element);
                         element.afterInitialisation();
+                        offsetX += element.getWidth();
                     }
                 }
             }
         }
     }
 
-    @SuppressWarnings("SlowAbstractSetRemoveAll")
+    private void checkAndUpdateTime(float delta) {
+        if (world.getCurrentTime() <= 0) {
+            world.setGameOver(true);
+            return;
+        }
+
+        world.setCurrentTime(world.getCurrentTime() - delta);
+    }
+
     @Override
     public void update(float delta) {
-        handleInput();
+        if (world.isGameOver()) {
 
-        for (Road road : world.getRoads()) {
-            List<GameElement> removeElementsList = new ArrayList<GameElement>(road.getEntityCount());
+        }
+        else if (world.isPause()) {
 
-            for (GameElement element : road.getElements()) {
-                boolean toRemove = update(element, delta);
-                if (toRemove)
-                    removeElementsList.add(element);
+        }
+        else {
+            handleInput();
+
+            for (Road road : world.getRoads()) {
+                Set<GameElement> removeElementsList = new HashSet<GameElement>(road.getEntityCount(), 1);
+
+                for (GameElement element : road.getElements()) {
+                    boolean toRemove = update(element, delta);
+                    if (toRemove)
+                        removeElementsList.add(element);
+                }
+
+                road.getElements().removeAll(removeElementsList);
+
+                tryToAddElements(road);
             }
 
-            road.getElements().removeAll(removeElementsList);
+            for (GameElement element : world.getElements()) {
+                update(element, delta);
+            }
 
-            tryToAddElements(road);
+            handleCollisions(delta);
+
+            updateFrogger(delta);
+
+            checkAndUpdateTime(delta);
+
         }
-
-        for (GameElement element : world.getElements()) {
-            update(element, delta);
-        }
-
-        handleCollisions(delta);
-
-        updateFrogger(delta);
     }
 
 }

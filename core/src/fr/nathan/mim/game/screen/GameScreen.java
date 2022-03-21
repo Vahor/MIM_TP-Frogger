@@ -1,4 +1,4 @@
-package fr.nathan.mim.game.scene;
+package fr.nathan.mim.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -22,25 +22,20 @@ public class GameScreen implements Screen {
 //        world = new World();
 //        world.demoWorld();
         world = worldDao.get("config.json");
- //      worldDao.save("config.json", world);
+//              worldDao.save("config.json", world);
 
         worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world);
         inputHandler    = new InputHandler(worldController);
-
-        // Avance rapide de 10s
-        // todo placer les elements au centre directement
-        for (int i = 0; i < 10; i++) {
-            worldController.update(1f);
-        }
-        worldRenderer.update(1);
 
         Gdx.input.setInputProcessor(inputHandler);
 
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        System.out.println("GameScreen.show");
+    }
 
     @Override
     public void render(float delta) {
@@ -54,7 +49,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        worldRenderer.setSize(width, height);
+        worldRenderer.resize(width, height);
+        inputHandler.resize(width, height);
     }
 
     @Override

@@ -14,4 +14,12 @@ public abstract class Controller {
     }
 
     abstract public void update(float delta);
+
+    public World getWorld() {
+        return world;
+    }
+
+    public Batch getBatch() {
+        return batch;
+    }
 }
