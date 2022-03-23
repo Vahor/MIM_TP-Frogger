@@ -98,7 +98,7 @@ public class WorldRenderer extends Controller {
         }
     }
 
-    public void drawHUD() {
+    public void drawHUD(float delta) {
         BitmapFont font = TextureFactory.getInstance().getFont();
 
         font.draw(batch, "Nombre de vies : " + world.getRemainingLives(),
@@ -116,6 +116,16 @@ public class WorldRenderer extends Controller {
         font.draw(batch, glyphLayout,
                 (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
                 14 * pixelsPerUnitY);
+
+        if(world.getSuccessMessageTime() > 0) {
+            world.setSuccessMessageTime(world.getSuccessMessageTime() - delta);
+
+            glyphLayout.setText(font, "Bravo");
+            font.draw(batch, glyphLayout,
+                    (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
+                    14.3f * pixelsPerUnitY);
+
+        }
     }
 
     @Override
@@ -126,7 +136,7 @@ public class WorldRenderer extends Controller {
         drawElements();
 
         drawElement(world.getFrogger());
-        drawHUD();
+        drawHUD(delta);
 
         batch.end();
 

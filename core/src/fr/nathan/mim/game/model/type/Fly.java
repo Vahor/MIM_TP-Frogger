@@ -1,6 +1,5 @@
 package fr.nathan.mim.game.model.type;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.Direction;
@@ -11,58 +10,69 @@ public class Fly extends MovingEntity {
 
     private float stateTime;
 
-    private final float hiddenTime;
-    private final float visibleTime;
+    private final float delay;
 
-    private final Vector2 fromPoint;
-    private final Vector2 toPoint;
+    private float moveSpeed;
 
-    private final float moveSpeed;
+    private Vector2 direction;
+    private Vector2 fromPoint;
+    private Vector2 toPoint;
 
-    private boolean visible = false;
+    private boolean leftToRight = false;
 
     public Fly(FlyConfiguration flyConfiguration) {
-        this.hiddenTime  = flyConfiguration.getHiddenTime();
-        this.visibleTime = flyConfiguration.getVisibleTime();
-        this.fromPoint   = flyConfiguration.getFromPoint();
-        this.toPoint     = flyConfiguration.getToPoint();
-        this.moveSpeed   = flyConfiguration.getMoveSpeed();
+        this.delay = flyConfiguration.getDelay();
+        this.moveSpeed = flyConfiguration.getMoveSpeed();
+    }
+
+    public void initRandomDirection() {
+        fromPoint = new Vector2(
+                0,
+                World.SHARED_RANDOM.nextFloat() * World.instance.getHeight());
+        toPoint = new Vector2(
+               World.instance.getWidth(),
+                World.SHARED_RANDOM.nextFloat() * World.instance.getHeight());
+
+        leftToRight = World.SHARED_RANDOM.nextBoolean();
+        if(leftToRight)
+            direction = toPoint.cpy().sub(fromPoint);
+        else
+            direction = fromPoint.cpy().sub(toPoint);
     }
 
     @Override
     public void updateVelocity() {
-        velocity.set(
-                toPoint.cpy().sub(fromPoint).scl(moveSpeed + World.instance.getMoveSpeedBoost())
-        );
-        System.out.println("velocity = " + velocity);
+        velocity.set(direction.cpy().scl(moveSpeed + (World.instance.getMoveSpeedBoost()*.1f)));
     }
 
     @Override
     public void afterInitialisation() {
         super.afterInitialisation();
+
+        initRandomDirection();
         updateVelocity();
-        position.y = fromPoint.y;
         position.add(velocity.cpy().scl(World.SHARED_RANDOM.nextFloat() * toPoint.cpy().sub(fromPoint).len()));
     }
 
     @Override
-    public void whenOutOfBorder(World world) {
-
-        position.set(fromPoint);
-
-        //System.out.println("position = " + position);
-        //moveSpeed = -moveSpeed;
-        //updateVelocity();
+    public void whenOutOfBorder(World world, float delta) {
+        stateTime += delta;
+        if(stateTime > delay) {
+            initRandomDirection();
+            updateVelocity();
+            position.set(leftToRight ? fromPoint : toPoint);
+            stateTime = 0;
+        }
     }
 
     @Override
     public float getWidth() {
-        return .5f;
+        return .7f;
     }
 
     @Override
     public float getHeight() {
-        return .5f;
+        return .7f;
     }
 
     @Override
@@ -82,26 +92,11 @@ public class Fly extends MovingEntity {
 
     @Override
     public boolean isVisible() {
-        return visible;
+        return true;
     }
 
     @Override
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {
-        if (!visible) return CollideResult.NOTHING;
         return CollideResult.DEAD;
-    }
-
-    @Override
-    public void update(float delta) {
-        super.update(delta);
-        stateTime += delta;
-        if (visible && stateTime > visibleTime) {
-            visible   = false;
-            stateTime = 0;
-        }
-        else if (!visible && stateTime > hiddenTime) {
-            visible   = true;
-            stateTime = 0;
-        }
     }
 }

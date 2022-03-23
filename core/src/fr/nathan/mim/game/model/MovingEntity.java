@@ -18,7 +18,7 @@ public abstract class MovingEntity extends GameElement {
         position.add(velocity.cpy().scl(delta));
     }
 
-    public void whenOutOfBorder(World world) {}
+    public void whenOutOfBorder(World world, float delta) {}
 
     public void updateVelocity() {
         float speedBoost = World.instance.getMoveSpeedBoost();

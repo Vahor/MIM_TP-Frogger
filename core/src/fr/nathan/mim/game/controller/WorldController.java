@@ -106,24 +106,24 @@ public class WorldController extends Controller {
         }
     }
 
-    private boolean handleBorders(MovingEntity element) {
+    private boolean handleBorders(MovingEntity element, float delta) {
         if (element.isUseDirectionForBorders()) {
             if ((element.getDirection() == Direction.LEFT && element.getX() < -element.getWidth())
                     || (element.getDirection() == Direction.RIGHT && element.getX() > world.getWidth())
-                    || element.getY() > world.getHeight()
+                    || element.getY() > world.getHeight() - element.getHeight()
                     || element.getY() < 0
             ) {
-                element.whenOutOfBorder(world);
+                element.whenOutOfBorder(world, delta);
                 return true;
             }
         }
         else {
             if ((element.getX() < -element.getWidth())
                     || (element.getX() > world.getWidth())
-                    || element.getY() > world.getHeight()
+                    || element.getY() > world.getHeight() - element.getHeight()
                     || element.getY() < 0
             ) {
-                element.whenOutOfBorder(world);
+                element.whenOutOfBorder(world, delta);
                 return true;
             }
         }
@@ -131,13 +131,13 @@ public class WorldController extends Controller {
         return false;
     }
 
-    private void handleBordersFrogger(Frogger element) {
+    private void handleBordersFrogger(Frogger element, float delta) {
         if (element.getX() < 0 ||
                 element.getX() > world.getWidth() - element.getWidth() ||
                 element.getY() > world.getHeight() - element.getHeight() ||
                 element.getY() < 0
         ) {
-            element.whenOutOfBorder(world);
+            element.whenOutOfBorder(world, delta);
         }
     }
 
@@ -207,9 +207,9 @@ public class WorldController extends Controller {
     private void onFroggerWin() {
         teleportFroggerToSpawn();
         world.setScore(world.getScore() + 100);
+        world.setSuccessMessageTime(3);
 
         for (GameElement element : world.getElements()) {
-
             if (element instanceof MovingEntity) {
                 ((MovingEntity) element).updateVelocity();
             }
@@ -228,7 +228,7 @@ public class WorldController extends Controller {
     private boolean update(GameElement element, float delta) {
         element.update(delta);
         if (element instanceof MovingEntity) {
-            return handleBorders((MovingEntity) element);
+            return handleBorders((MovingEntity) element, delta);
         }
         return false;
     }
@@ -236,7 +236,7 @@ public class WorldController extends Controller {
     private void updateFrogger(float delta) {
         Frogger frogger = world.getFrogger();
         frogger.update(delta);
-        handleBordersFrogger(frogger);
+        handleBordersFrogger(frogger, delta);
     }
 
     private void tryToAddElements(Road road) {

@@ -19,14 +19,14 @@ public class GameScreen implements Screen {
     public GameScreen(Batch batch) {
         WorldDao worldDao = new WorldDao();
         World world;
-       world = new World();
+        world = new World();
         world.demoWorld();
 //        world = worldDao.get("config.json");
-              worldDao.save("config.json", world);
+        worldDao.save("config.json", world);
 
-        worldRenderer   = new WorldRenderer(world, batch);
+        worldRenderer = new WorldRenderer(world, batch);
         worldController = new WorldController(world, batch);
-        inputHandler    = new InputHandler(worldController);
+        inputHandler = new InputHandler(worldController);
 
         Gdx.input.setInputProcessor(inputHandler);
 
@@ -34,7 +34,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        System.out.println("GameScreen.show");
     }
 
     @Override
@@ -51,12 +50,19 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
+
     @Override
-    public void resume() {}
+    public void resume() {
+    }
+
     @Override
-    public void hide() {}
+    public void hide() {
+    }
+
     @Override
-    public void dispose() {}
+    public void dispose() {
+    }
 
 }

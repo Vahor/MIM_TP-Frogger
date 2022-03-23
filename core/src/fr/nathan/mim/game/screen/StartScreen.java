@@ -42,11 +42,15 @@ public class StartScreen implements Screen, InputProcessor {
 
 
     @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Client.getInstance().setScreen(new GameScreen(batch));
         return true;
     }
 
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
 
     @Override
     public void show() {
@@ -83,10 +87,6 @@ public class StartScreen implements Screen, InputProcessor {
     }
     @Override
     public boolean keyTyped(char character) {
-        return false;
-    }
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         return false;
     }
     @Override

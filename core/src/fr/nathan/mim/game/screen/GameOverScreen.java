@@ -57,9 +57,9 @@ public class GameOverScreen implements Screen, InputProcessor {
         // On change le random pour pas refaire la même partie
         World.SHARED_RANDOM = new Random(World.SHARED_RANDOM.nextLong());
 
-        Client.getInstance().setScreen(new GameScreen(batch));
+        Client.getInstance().setScreen(new StartScreen(batch));
 
-        return false;
+        return true;
     }
 
     @Override

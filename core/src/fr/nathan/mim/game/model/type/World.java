@@ -40,6 +40,8 @@ public class World implements Configurable {
 
     private transient long score;
 
+    private transient float successMessageTime;
+
     private int maxLives;
     private transient int remainingLives;
 
@@ -111,6 +113,14 @@ public class World implements Configurable {
     }
     public void setRemainingLives(int remainingLives) {
         this.remainingLives = remainingLives;
+    }
+
+    public void setSuccessMessageTime(float successMessageTime) {
+        this.successMessageTime = successMessageTime;
+    }
+
+    public float getSuccessMessageTime() {
+        return successMessageTime;
     }
 
     public List<GameElement> generateElement(Road road) {
@@ -189,22 +199,19 @@ public class World implements Configurable {
         debug              = true;
         width              = 8;
         height             = 13.5f;
-        maxTime            = 600;
-        speedBoostPerScore = .01f;
+        maxTime            = 60;
+        speedBoostPerScore = .005f;
 
         maxLives = 5;
 
         froggerConfiguration   = new FroggerConfiguration(
-                .0f, //.05f
+                .05f,
                 1,
                 new Vector2(width / 2 - .25f, .15f));
         turtleConfiguration    = new TurtleConfiguration(3, 3f, 1, 3);
         flyConfiguration       = new FlyConfiguration(
-                1,
-                1,
-                new Vector2(0.3f, 6.25f),
-                new Vector2(7.3f, 0.25f),
-                .1f
+                3,
+                .4f
         );
         refugeFlyConfiguration = new RefugeFlyConfiguration(1);
 
