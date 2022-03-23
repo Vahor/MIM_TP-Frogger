@@ -2,28 +2,41 @@ package fr.nathan.mim.game.config;
 
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.List;
-
 public class FlyConfiguration {
 
-    private float changeSpotDelay;
+    private float hiddenTime;
+    private float visibleTime;
 
-    private List<Vector2> positions;
+    private Vector2 fromPoint;
+    private Vector2 toPoint;
+
+    private float moveSpeed;
 
     //Parser
     public FlyConfiguration() {
     }
 
-    public FlyConfiguration(float changeSpotDelay, List<Vector2> positions) {
-        this.changeSpotDelay = changeSpotDelay;
-        this.positions       = positions;
+    public FlyConfiguration(float hiddenTime, float visibleTime, Vector2 fromPoint, Vector2 toPoint, float moveSpeed) {
+        this.hiddenTime  = hiddenTime;
+        this.visibleTime = visibleTime;
+        this.fromPoint   = fromPoint;
+        this.toPoint     = toPoint;
+        this.moveSpeed   = moveSpeed;
     }
 
-    public float getChangeSpotDelay() {
-        return changeSpotDelay;
+    public float getHiddenTime() {
+        return hiddenTime;
     }
-
-    public List<Vector2> getPositions() {
-        return positions;
+    public float getVisibleTime() {
+        return visibleTime;
+    }
+    public Vector2 getFromPoint() {
+        return fromPoint;
+    }
+    public Vector2 getToPoint() {
+        return toPoint;
+    }
+    public float getMoveSpeed() {
+        return moveSpeed;
     }
 }

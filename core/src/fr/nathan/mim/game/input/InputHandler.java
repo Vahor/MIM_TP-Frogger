@@ -56,8 +56,6 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
 
         if (keycode == Input.Keys.D)
             world.setDebug(!world.isDebug());
-        if (keycode == Input.Keys.G)
-            world.setGameOver(!world.isGameOver());
         if (keycode == Input.Keys.ESCAPE)
             world.setPause(!world.isPause());
         if (keycode == Input.Keys.C)
@@ -80,10 +78,6 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        if (world.isGameOver()) {
-            world.init();
-            return true;
-        }
         if (world.isPause()) return false;
         handleMovement(
                 center,

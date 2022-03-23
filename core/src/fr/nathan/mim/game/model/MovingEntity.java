@@ -1,5 +1,6 @@
 package fr.nathan.mim.game.model;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import fr.nathan.mim.game.model.type.World;
 
@@ -19,11 +20,16 @@ public abstract class MovingEntity extends GameElement {
 
     public void whenOutOfBorder(World world) {}
 
-    protected void updateVelocity() {
+    public void updateVelocity() {
+        float speedBoost = World.instance.getMoveSpeedBoost();
         getVelocity().set(
-                getRoad().getDirection().getMotX() * getRoad().getMoveSpeed(),
-                getRoad().getDirection().getMotY() * getRoad().getMoveSpeed()
+                getRoad().getDirection().getMotX() * (getRoad().getMoveSpeed() + speedBoost),
+                getRoad().getDirection().getMotY() * (getRoad().getMoveSpeed() + speedBoost)
         );
+    }
+
+    public boolean isUseDirectionForBorders() {
+        return true;
     }
 
     @Override

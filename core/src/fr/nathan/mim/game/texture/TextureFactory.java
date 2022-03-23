@@ -56,6 +56,7 @@ public class TextureFactory {
         textureMap.put(Tree.class, new TreeTexture(new TextureAtlas(Gdx.files.internal("log/log.pack"))));
         textureMap.put(Vehicle.class, new VehicleTexture(new TextureAtlas(Gdx.files.internal("vehicle/vehicle.pack"))));
         textureMap.put(Fly.class, new FlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
+        textureMap.put(RefugeFly.class, new RefugeFlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
     }
 
     @SuppressWarnings("unchecked")

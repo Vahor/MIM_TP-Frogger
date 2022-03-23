@@ -7,17 +7,15 @@ public class FroggerConfiguration {
     private float jumpDelay;
     private float jumpDistance;
     private Vector2 startingPosition;
-    private int totalLives;
 
     // parser
     public FroggerConfiguration() {
     }
 
-    public FroggerConfiguration(float jumpDelay, float jumpDistance, Vector2 startingPosition, int totalLives) {
+    public FroggerConfiguration(float jumpDelay, float jumpDistance, Vector2 startingPosition) {
         this.jumpDelay        = jumpDelay;
         this.jumpDistance     = jumpDistance;
         this.startingPosition = startingPosition;
-        this.totalLives       = totalLives;
     }
 
     public float getJumpDelay() {
@@ -32,17 +30,12 @@ public class FroggerConfiguration {
         return startingPosition;
     }
 
-    public int getTotalLives() {
-        return totalLives;
-    }
-
     @Override
     public String toString() {
         return "FroggerConfiguration{" +
                 "jumpDelay=" + jumpDelay +
                 ", jumpDistance=" + jumpDistance +
                 ", startingPosition=" + startingPosition +
-                ", totalLives=" + totalLives +
                 '}';
     }
 }

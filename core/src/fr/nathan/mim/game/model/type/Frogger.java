@@ -24,12 +24,9 @@ public class Frogger extends MovingEntity {
     private final float jumpDistance;
     private final Vector2 startingPosition;
 
-    private int remainingLives;
-
     public Frogger(FroggerConfiguration froggerConfiguration) {
         this.jumpDelay        = froggerConfiguration.getJumpDelay();
         this.jumpDistance     = froggerConfiguration.getJumpDistance();
-        this.remainingLives   = froggerConfiguration.getTotalLives();
         this.startingPosition = froggerConfiguration.getStartingPosition();
     }
 
@@ -53,9 +50,6 @@ public class Frogger extends MovingEntity {
     public Vector2 getStartingPosition() {
         return startingPosition;
     }
-    public int getRemainingLives() {
-        return remainingLives;
-    }
     @Override
     public float getYWithRoadOffset() {
         return getY();
@@ -64,6 +58,11 @@ public class Frogger extends MovingEntity {
     public void setState(State state) {
         this.state = state;
         stateTime  = 0;
+    }
+
+    @Override
+    public boolean isUseDirectionForBorders() {
+        return false;
     }
 
     @Override
@@ -109,14 +108,7 @@ public class Frogger extends MovingEntity {
         return stateTime;
     }
 
-    /**
-     *
-     * @return True si la partie continue
-     */
-    public boolean onDied() {
-        remainingLives--;
-        System.out.println("remainingLives = " + remainingLives);
-        return remainingLives > 0;
+    public void onDied() {
     }
 
     @Override

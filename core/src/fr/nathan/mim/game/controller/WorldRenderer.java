@@ -1,6 +1,5 @@
 package fr.nathan.mim.game.controller;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import fr.nathan.mim.game.controller.renderer.DebugRenderer;
 import fr.nathan.mim.game.model.GameElement;
-import fr.nathan.mim.game.model.type.Frogger;
 import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
 import fr.nathan.mim.game.texture.TextureFactory;
@@ -64,6 +62,7 @@ public class WorldRenderer extends Controller {
     }
 
     private void drawElement(GameElement element) {
+        if (!element.isVisible()) return;
         TextureRegion region = TextureFactory.getInstance().getTexture(element);
         if (region == null) {
             System.out.println("element = " + element.getClass());
@@ -101,9 +100,8 @@ public class WorldRenderer extends Controller {
 
     public void drawHUD() {
         BitmapFont font = TextureFactory.getInstance().getFont();
-        Frogger frogger = world.getFrogger();
 
-        font.draw(batch, "Nombre de vies : " + frogger.getRemainingLives(),
+        font.draw(batch, "Nombre de vies : " + world.getRemainingLives(),
                 0,
                 14 * pixelsPerUnitY);
 
@@ -114,39 +112,21 @@ public class WorldRenderer extends Controller {
                 14 * pixelsPerUnitY);
 
 
-        glyphLayout.setText(font, "FPS : " + Gdx.graphics.getFramesPerSecond());
+        glyphLayout.setText(font, "Score : " + world.getScore());
         font.draw(batch, glyphLayout,
                 (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
                 14 * pixelsPerUnitY);
-    }
-
-    public void drawGameOver() {
-        BitmapFont font = TextureFactory.getInstance().getFont();
-        glyphLayout.setText(font, "GAME OVER");
-        font.draw(batch, glyphLayout,
-                (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
-                (world.getHeight() * pixelsPerUnitY) / 2);
-
-        glyphLayout.setText(font, "CLIQUER POUR RECOMMENCER");
-        font.draw(batch, glyphLayout,
-                (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
-                ((world.getHeight() - 3) * pixelsPerUnitY) / 2);
     }
 
     @Override
     public void update(float delta) {
         batch.begin();
 
-        if (world.isGameOver()) {
-            drawGameOver();
-        }
-        else {
-            drawBackground();
-            drawElements();
+        drawBackground();
+        drawElements();
 
-            drawElement(world.getFrogger());
-            drawHUD();
-        }
+        drawElement(world.getFrogger());
+        drawHUD();
 
         batch.end();
 

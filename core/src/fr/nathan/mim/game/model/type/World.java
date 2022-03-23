@@ -3,15 +3,15 @@ package fr.nathan.mim.game.model.type;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.config.Configurable;
-import fr.nathan.mim.game.config.FlyConfiguration;
-import fr.nathan.mim.game.config.FroggerConfiguration;
-import fr.nathan.mim.game.config.TurtleConfiguration;
+import fr.nathan.mim.game.config.*;
 import fr.nathan.mim.game.model.GameElement;
 
 import java.util.*;
 
 public class World implements Configurable {
+
+    public static Random SHARED_RANDOM = new Random();
+    public static final Timer TIMER = new Timer();
 
     private long seed = -1;
     private boolean debug = false;
@@ -24,20 +24,26 @@ public class World implements Configurable {
     private FroggerConfiguration froggerConfiguration;
     private TurtleConfiguration turtleConfiguration;
     private FlyConfiguration flyConfiguration;
+    private RefugeFlyConfiguration refugeFlyConfiguration;
+    private RefugeConfiguration refugeConfiguration;
 
     private Set<Road> roads;
     private final transient Set<GameElement> elements = new HashSet<GameElement>();
 
-    private transient boolean gameOver = false;
     private transient boolean pause = false;
     private transient boolean cheat = false;
+
+    private float speedBoostPerScore;
 
     private float maxTime;
     private transient Float currentTime;
 
-    public static Random SHARED_RANDOM = new Random();
-    public static final Timer TIMER = new Timer();
+    private transient long score;
 
+    private int maxLives;
+    private transient int remainingLives;
+
+    public static World instance;
     public Frogger getFrogger() {
         return frogger;
     }
@@ -65,14 +71,6 @@ public class World implements Configurable {
         return height;
     }
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
-    }
-
     public void setPause(boolean pause) {
         this.pause = pause;
     }
@@ -93,6 +91,28 @@ public class World implements Configurable {
     public Float getCurrentTime() {
         return currentTime;
     }
+
+    public void setScore(long score) {
+        this.score = score;
+    }
+    public long getScore() {
+        return score;
+    }
+
+    public float getMoveSpeedBoost() {
+        return score * speedBoostPerScore;
+    }
+
+    public int getMaxLives() {
+        return maxLives;
+    }
+    public int getRemainingLives() {
+        return remainingLives;
+    }
+    public void setRemainingLives(int remainingLives) {
+        this.remainingLives = remainingLives;
+    }
+
     public List<GameElement> generateElement(Road road) {
         List<GameElement> elements = new ArrayList<GameElement>(3);
         if (road.getType() == Road.Type.TURTLE) {
@@ -123,6 +143,8 @@ public class World implements Configurable {
         else
             SHARED_RANDOM = new Random();
 
+
+        instance = this;
         init();
 
     }
@@ -141,32 +163,52 @@ public class World implements Configurable {
         frogger = new Frogger(froggerConfiguration);
         frogger.getPosition().set(froggerConfiguration.getStartingPosition());
 
-        Fly fly = new Fly(flyConfiguration);
-        fly.getPosition().set(fly.getNextPosition());
-        elements.add(fly);
+        elements.add(new Fly(flyConfiguration));
+        elements.add(new RefugeFly(refugeFlyConfiguration, refugeConfiguration));
 
-        gameOver = false;
+        for (GameElement element : elements) {
+            element.afterInitialisation();
+        }
+
+        for (Vector2 position : refugeConfiguration.getPositions()) {
+            Refuge refuge = new Refuge();
+            refuge.getPosition().set(position);
+            elements.add(refuge);
+        }
+
+        remainingLives = maxLives;
 
         currentTime = maxTime + 1;
-
-        seed     = SHARED_RANDOM.nextLong();
-
 
     }
 
     public void demoWorld() {
 
-        debug  = true;
-        width  = 8;
-        height = 13.5f;
+        instance = this;
 
-        froggerConfiguration = new FroggerConfiguration(
-                .1f,
+        debug              = true;
+        width              = 8;
+        height             = 13.5f;
+        maxTime            = 600;
+        speedBoostPerScore = .01f;
+
+        maxLives = 5;
+
+        froggerConfiguration   = new FroggerConfiguration(
+                .0f, //.05f
                 1,
-                new Vector2(width / 2 - .25f, .15f),
-                3);
-        turtleConfiguration  = new TurtleConfiguration(3, 3f, 1, 3);
-        flyConfiguration     = new FlyConfiguration(1, new ArrayList<Vector2>(Arrays.asList(
+                new Vector2(width / 2 - .25f, .15f));
+        turtleConfiguration    = new TurtleConfiguration(3, 3f, 1, 3);
+        flyConfiguration       = new FlyConfiguration(
+                1,
+                1,
+                new Vector2(0.3f, 6.25f),
+                new Vector2(7.3f, 0.25f),
+                .1f
+        );
+        refugeFlyConfiguration = new RefugeFlyConfiguration(1);
+
+        refugeConfiguration = new RefugeConfiguration(new ArrayList<Vector2>(Arrays.asList(
                 new Vector2(0.3f, 12.25f),
                 new Vector2(2, 12.25f),
                 new Vector2(3.8f, 12.25f),
@@ -214,5 +256,8 @@ public class World implements Configurable {
 
 
         elements.add(new Fly(flyConfiguration));
+        elements.add(new RefugeFly(refugeFlyConfiguration, refugeConfiguration));
+
+        init();
     }
 }

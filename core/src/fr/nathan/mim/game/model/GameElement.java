@@ -37,6 +37,10 @@ public abstract class GameElement implements Configurable, Collidable {
         return position.y;
     }
 
+    public boolean isVisible() {
+        return true;
+    }
+
     public float getRotationOffset() { // todo faire la rotation sur le png directement pour le frogger ?
         return 0;
     }
@@ -51,7 +55,7 @@ public abstract class GameElement implements Configurable, Collidable {
                 getYWithRoadOffset() < other.getYWithRoadOffset() + other.getHeight() && getYWithRoadOffset() + getHeight() > other.getYWithRoadOffset();
     }
 
-    public void update(float delta)    {}
+    public void update(float delta)   {}
 
     public void afterInitialisation() {}
 
