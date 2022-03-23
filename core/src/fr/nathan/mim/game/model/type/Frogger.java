@@ -2,7 +2,6 @@ package fr.nathan.mim.game.model.type;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.config.FroggerConfiguration;
 import fr.nathan.mim.game.model.MovingEntity;
@@ -19,6 +18,8 @@ public class Frogger extends MovingEntity {
 
     private transient boolean canJump = true;
 
+    private float currentJumpTime = 0;
+
     private final float jumpDelay;
     private final float jumpDistance;
     private final Vector2 startingPosition;
@@ -26,9 +27,9 @@ public class Frogger extends MovingEntity {
     private int remainingLives;
 
     public Frogger(FroggerConfiguration froggerConfiguration) {
-        this.jumpDelay      = froggerConfiguration.getJumpDelay();
-        this.jumpDistance   = froggerConfiguration.getJumpDistance();
-        this.remainingLives = froggerConfiguration.getTotalLives();
+        this.jumpDelay        = froggerConfiguration.getJumpDelay();
+        this.jumpDistance     = froggerConfiguration.getJumpDistance();
+        this.remainingLives   = froggerConfiguration.getTotalLives();
         this.startingPosition = froggerConfiguration.getStartingPosition();
     }
 
@@ -69,6 +70,15 @@ public class Frogger extends MovingEntity {
     public void update(float delta) {
         super.update(delta);
         stateTime += delta;
+
+        // À chaque update, si on a un delay de saut, on le décrémente
+        if (currentJumpTime > 0) {
+            currentJumpTime -= delta;
+            // Si il est terminé, on peut re-sauter
+            if (currentJumpTime <= 0) {
+                canJump = true;
+            }
+        }
     }
 
     @Override
@@ -82,18 +92,13 @@ public class Frogger extends MovingEntity {
 
     public void onJumpEnd() {
         setState(Frogger.State.IDLE);
-        if (jumpDelay > 0) {
-            World.TIMER.scheduleTask(new Timer.Task() {
-                @Override
-                public void run() {
-                    canJump = true;
-                }
-            }, jumpDelay);
-        }
-        else {
-            canJump = true;
-        }
         getVelocity().set(0, 0);
+
+        // Si il y a un delay de saut, on l'applique, sinon on peut re-sauter directement
+        if (jumpDelay > 0)
+            currentJumpTime = jumpDelay;
+        else
+            canJump = true;
     }
 
     public void onJumpStart() {
