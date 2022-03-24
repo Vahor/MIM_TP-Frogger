@@ -20,9 +20,11 @@ public enum Direction {
     public int getRotation() {
         return rotation;
     }
+
     public int getMotX() {
         return motX;
     }
+
     public int getMotY() {
         return motY;
     }

@@ -9,9 +9,9 @@ import fr.nathan.mim.game.screen.StartScreen;
 
 public class Client extends Game {
 
-    private Batch batch;
-
     private static Client instance = null;
+
+    private Batch batch;
 
     public static Game getInstance() {
         return instance;
@@ -32,6 +32,7 @@ public class Client extends Game {
 
         super.render();
     }
+
     @Override
     public void dispose() {
         super.dispose();

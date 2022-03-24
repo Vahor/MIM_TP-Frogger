@@ -5,32 +5,6 @@ import fr.nathan.mim.game.model.MovingEntity;
 
 public class Tree extends MovingEntity {
 
-    public enum Type {
-        SMALL(1, 1.5f),
-        MEDIUM(2, 2f),
-        LARGE(0, 2.3f),
-
-        ;
-
-        private final int id;
-        private final float width;
-
-        private static final Type[] values = values();
-
-        Type(int id, float width) {
-            this.id    = id;
-            this.width = width;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public static Type random() {
-            return values[World.SHARED_RANDOM.nextInt(values.length)];
-        }
-    }
-
     private Type type;
 
     public Tree(Type type) {
@@ -64,6 +38,31 @@ public class Tree extends MovingEntity {
     @Override
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {
         return CollideResult.RIDE;
+    }
+
+    public enum Type {
+        SMALL(1, 1.5f),
+        MEDIUM(2, 2f),
+        LARGE(0, 2.3f),
+
+        ;
+
+        private static final Type[] values = values();
+        private final int id;
+        private final float width;
+
+        Type(int id, float width) {
+            this.id    = id;
+            this.width = width;
+        }
+
+        public static Type random() {
+            return values[World.SHARED_RANDOM.nextInt(values.length)];
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 
 }

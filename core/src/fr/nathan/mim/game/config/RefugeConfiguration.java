@@ -6,7 +6,6 @@ import java.util.List;
 
 public class RefugeConfiguration {
 
-
     private List<Vector2> positions;
 
     //Parser

@@ -7,16 +7,13 @@ import fr.nathan.mim.game.model.MovingEntity;
 
 public class Turtle extends MovingEntity {
 
-    public enum State {
-        MOVE, SINK, SPAWN, DEAD
-    }
-
-    private transient State state = State.MOVE;
-    private transient float stateTime = 0;
-    private transient float currentRideTime = 0;
-
     private final float respawnDelay;
     private final float maxRideTime;
+
+    private transient State state = State.MOVE;
+
+    private transient float stateTime = 0;
+    private transient float currentRideTime = 0;
 
     public Turtle(TurtleConfiguration turtleConfiguration) {
         this.respawnDelay = turtleConfiguration.getRespawnDelay();
@@ -99,5 +96,9 @@ public class Turtle extends MovingEntity {
                 ", respawnDelay=" + respawnDelay +
                 ", super=" + super.toString() +
                 '}';
+    }
+
+    public enum State {
+        MOVE, SINK, SPAWN, DEAD
     }
 }

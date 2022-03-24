@@ -40,6 +40,7 @@ public class WorldRenderer extends Controller {
     public float getPixelsPerUnitX() {
         return pixelsPerUnitX;
     }
+
     public float getPixelsPerUnitY() {
         return pixelsPerUnitY;
     }
@@ -117,7 +118,7 @@ public class WorldRenderer extends Controller {
                 (world.getWidth() * pixelsPerUnitX - glyphLayout.width) / 2,
                 14 * pixelsPerUnitY);
 
-        if(world.getSuccessMessageTime() > 0) {
+        if (world.getSuccessMessageTime() > 0) {
             world.setSuccessMessageTime(world.getSuccessMessageTime() - delta);
 
             glyphLayout.setText(font, "Bravo");

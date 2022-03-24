@@ -20,10 +20,6 @@ import java.util.Set;
 
 public class WorldController extends Controller {
 
-    enum Keys {
-        LEFT, RIGHT, UP, DOWN
-    }
-
     private final Map<Keys, Boolean> pressedKeys = new HashMap<Keys, Boolean>(4, 1);
 
     public WorldController(World world, Batch batch) {
@@ -39,9 +35,11 @@ public class WorldController extends Controller {
     public void onLeftPressed() {
         pressedKeys.put(Keys.LEFT, true);
     }
+
     public void onLeftReleased() {
         pressedKeys.put(Keys.LEFT, false);
     }
+
     public boolean isLeftPressed() {
         return pressedKeys.get(Keys.LEFT);
     }
@@ -49,9 +47,11 @@ public class WorldController extends Controller {
     public void onRightPressed() {
         pressedKeys.put(Keys.RIGHT, true);
     }
+
     public void onRightReleased() {
         pressedKeys.put(Keys.RIGHT, false);
     }
+
     public boolean isRightPressed() {
         return pressedKeys.get(Keys.RIGHT);
     }
@@ -59,9 +59,11 @@ public class WorldController extends Controller {
     public void onUpPressed() {
         pressedKeys.put(Keys.UP, true);
     }
+
     public void onUpReleased() {
         pressedKeys.put(Keys.UP, false);
     }
+
     public boolean isUpPressed() {
         return pressedKeys.get(Keys.UP);
     }
@@ -69,9 +71,11 @@ public class WorldController extends Controller {
     public void onDownPressed() {
         pressedKeys.put(Keys.DOWN, true);
     }
+
     public void onDownReleased() {
         pressedKeys.put(Keys.DOWN, false);
     }
+
     public boolean isDownPressed() {
         return pressedKeys.get(Keys.DOWN);
     }
@@ -173,10 +177,9 @@ public class WorldController extends Controller {
     }
 
     /**
-     *
-     * @param collideResult
-     * @param element
-     * @return True si l'action bloque les autres actions
+     * @param collideResult Le résultat de la collision.
+     * @param element L'élément avec lequel le Frogger est entré en collision.
+     * @return True si l'action empêche la suite d'action
      */
     private boolean resultCollideWith(CollideResult collideResult, GameElement element) {
 
@@ -341,10 +344,7 @@ public class WorldController extends Controller {
     @Override
     public void update(float delta) {
 
-        if (world.isPause()) {
-
-        }
-        else {
+        if (!world.isPause()) {
             handleInput();
 
             for (Road road : world.getRoads()) {
@@ -372,6 +372,10 @@ public class WorldController extends Controller {
             checkAndUpdateTime(delta);
 
         }
+    }
+
+    enum Keys {
+        LEFT, RIGHT, UP, DOWN
     }
 
 }

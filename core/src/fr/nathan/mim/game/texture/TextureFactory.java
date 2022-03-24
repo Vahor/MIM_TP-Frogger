@@ -8,24 +8,27 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
-import fr.nathan.mim.game.model.type.*;
-import fr.nathan.mim.game.texture.type.*;
+import fr.nathan.mim.game.model.type.Fly;
+import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.RefugeFly;
+import fr.nathan.mim.game.model.type.Tree;
+import fr.nathan.mim.game.model.type.Turtle;
+import fr.nathan.mim.game.model.type.Vehicle;
+import fr.nathan.mim.game.texture.type.FlyTexture;
+import fr.nathan.mim.game.texture.type.FroggerTexture;
+import fr.nathan.mim.game.texture.type.RefugeFlyTexture;
+import fr.nathan.mim.game.texture.type.TreeTexture;
+import fr.nathan.mim.game.texture.type.TurtleTexture;
+import fr.nathan.mim.game.texture.type.VehicleTexture;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TextureFactory {
 
-    private final Map<Class<? extends GameElement>, TextureHolder<? extends GameElement>> textureMap = new HashMap<Class<? extends GameElement>, TextureHolder<? extends GameElement>>();
-
     private static TextureFactory instance = null;
 
-    public static TextureFactory getInstance() {
-        if (instance == null) {
-            instance = new TextureFactory();
-        }
-        return instance;
-    }
+    private final Map<Class<? extends GameElement>, TextureHolder<? extends GameElement>> textureMap = new HashMap<Class<? extends GameElement>, TextureHolder<? extends GameElement>>();
 
     private final Texture background;
     private final BitmapFont font;
@@ -57,6 +60,13 @@ public class TextureFactory {
         textureMap.put(Vehicle.class, new VehicleTexture(new TextureAtlas(Gdx.files.internal("vehicle/vehicle.pack"))));
         textureMap.put(Fly.class, new FlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
         textureMap.put(RefugeFly.class, new RefugeFlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
+    }
+
+    public static TextureFactory getInstance() {
+        if (instance == null) {
+            instance = new TextureFactory();
+        }
+        return instance;
     }
 
     @SuppressWarnings("unchecked")

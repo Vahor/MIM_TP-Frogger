@@ -8,9 +8,9 @@ import fr.nathan.mim.game.model.MovingEntity;
 
 public class Frogger extends MovingEntity {
 
-    public enum State {
-        IDLE, JUMPING
-    }
+    private final float jumpDelay;
+    private final float jumpDistance;
+    private final Vector2 startingPosition;
 
     private transient State state = State.IDLE;
     private transient float stateTime = 0;
@@ -20,10 +20,6 @@ public class Frogger extends MovingEntity {
 
     private float currentJumpTime = 0;
 
-    private final float jumpDelay;
-    private final float jumpDistance;
-    private final Vector2 startingPosition;
-
     public Frogger(FroggerConfiguration froggerConfiguration) {
         this.jumpDelay        = froggerConfiguration.getJumpDelay();
         this.jumpDistance     = froggerConfiguration.getJumpDistance();
@@ -32,32 +28,34 @@ public class Frogger extends MovingEntity {
 
     public State getState() {return state;}
 
-    public boolean canJump() {
-        return canJump && state == State.IDLE;
+    public void setState(State state) {
+        this.state = state;
+        stateTime  = 0;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
+    public boolean canJump() {
+        return canJump && state == State.IDLE;
     }
 
     public Direction getDirection() {
         return direction;
     }
 
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
     public float getJumpDistance() {
         return jumpDistance;
     }
+
     public Vector2 getStartingPosition() {
         return startingPosition;
     }
+
     @Override
     public float getYWithRoadOffset() {
         return getY();
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        stateTime  = 0;
     }
 
     @Override
@@ -125,11 +123,16 @@ public class Frogger extends MovingEntity {
     public float getRotationOffset() {
         return 90;
     }
+
     @Override
     public String toString() {
         return "Frogger{" +
                 "state=" + state +
                 ", super=" + super.toString() +
                 '}';
+    }
+
+    public enum State {
+        IDLE, JUMPING
     }
 }

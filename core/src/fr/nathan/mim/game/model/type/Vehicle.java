@@ -5,32 +5,6 @@ import fr.nathan.mim.game.model.MovingEntity;
 
 public class Vehicle extends MovingEntity {
 
-    public enum Type {
-        RED(0, 3.5f),
-        GRAY(1, 2),
-        YELLOW(2, 1.5f),
-        BLUE(3, 1.5f),
-        GREEN(4, 1.3f),
-        ;
-
-        private final int id;
-        private final float width;
-        private static final Type[] values = values();
-
-        Type(int id, float width) {
-            this.id    = id;
-            this.width = width;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public static Type random() {
-            return values[World.SHARED_RANDOM.nextInt(values.length)];
-        }
-    }
-
     private Type type;
 
     public Vehicle(Type type) {
@@ -52,12 +26,12 @@ public class Vehicle extends MovingEntity {
         return CollideResult.DEAD;
     }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override
@@ -72,5 +46,31 @@ public class Vehicle extends MovingEntity {
                 "vehicleType=" + type +
                 ", super=" + super.toString() +
                 '}';
+    }
+
+    public enum Type {
+        RED(0, 3.5f),
+        GRAY(1, 2),
+        YELLOW(2, 1.5f),
+        BLUE(3, 1.5f),
+        GREEN(4, 1.3f),
+        ;
+
+        private static final Type[] values = values();
+        private final int id;
+        private final float width;
+
+        Type(int id, float width) {
+            this.id    = id;
+            this.width = width;
+        }
+
+        public static Type random() {
+            return values[World.SHARED_RANDOM.nextInt(values.length)];
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 }

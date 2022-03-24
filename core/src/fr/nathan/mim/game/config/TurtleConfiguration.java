@@ -29,6 +29,7 @@ public class TurtleConfiguration {
     public int getMinGroupSize() {
         return minGroupSize;
     }
+
     public int getMaxGroupSize() {
         return maxGroupSize;
     }

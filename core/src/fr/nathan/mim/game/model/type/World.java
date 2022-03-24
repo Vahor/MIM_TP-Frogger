@@ -3,15 +3,29 @@ package fr.nathan.mim.game.model.type;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.config.*;
+import fr.nathan.mim.game.config.Configurable;
+import fr.nathan.mim.game.config.FlyConfiguration;
+import fr.nathan.mim.game.config.FroggerConfiguration;
+import fr.nathan.mim.game.config.RefugeConfiguration;
+import fr.nathan.mim.game.config.RefugeFlyConfiguration;
+import fr.nathan.mim.game.config.TurtleConfiguration;
 import fr.nathan.mim.game.model.GameElement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class World implements Configurable {
 
-    public static Random SHARED_RANDOM = new Random();
     public static final Timer TIMER = new Timer();
+    public static Random SHARED_RANDOM = new Random();
+
+    public static World instance;
+
+    private final transient Set<GameElement> elements = new HashSet<GameElement>();
 
     private long seed = -1;
     private boolean debug = false;
@@ -28,7 +42,6 @@ public class World implements Configurable {
     private RefugeConfiguration refugeConfiguration;
 
     private Set<Road> roads;
-    private final transient Set<GameElement> elements = new HashSet<GameElement>();
 
     private transient boolean pause = false;
     private transient boolean cheat = false;
@@ -45,7 +58,6 @@ public class World implements Configurable {
     private int maxLives;
     private transient int remainingLives;
 
-    public static World instance;
     public Frogger getFrogger() {
         return frogger;
     }
@@ -65,6 +77,7 @@ public class World implements Configurable {
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
+
     public float getWidth() {
         return width;
     }
@@ -73,32 +86,36 @@ public class World implements Configurable {
         return height;
     }
 
-    public void setPause(boolean pause) {
-        this.pause = pause;
-    }
     public boolean isPause() {
         return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 
     public boolean isCheat() {
         return cheat;
     }
+
     public void setCheat(boolean cheat) {
         this.cheat = cheat;
+    }
+
+    public Float getCurrentTime() {
+        return currentTime;
     }
 
     public void setCurrentTime(float currentTime) {
         this.currentTime = currentTime;
     }
-    public Float getCurrentTime() {
-        return currentTime;
+
+    public long getScore() {
+        return score;
     }
 
     public void setScore(long score) {
         this.score = score;
-    }
-    public long getScore() {
-        return score;
     }
 
     public float getMoveSpeedBoost() {
@@ -108,19 +125,21 @@ public class World implements Configurable {
     public int getMaxLives() {
         return maxLives;
     }
+
     public int getRemainingLives() {
         return remainingLives;
     }
+
     public void setRemainingLives(int remainingLives) {
         this.remainingLives = remainingLives;
     }
 
-    public void setSuccessMessageTime(float successMessageTime) {
-        this.successMessageTime = successMessageTime;
-    }
-
     public float getSuccessMessageTime() {
         return successMessageTime;
+    }
+
+    public void setSuccessMessageTime(float successMessageTime) {
+        this.successMessageTime = successMessageTime;
     }
 
     public List<GameElement> generateElement(Road road) {

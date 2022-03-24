@@ -14,7 +14,6 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
     private final WorldController worldController;
     private final World world;
 
-    private final float MIN_TOUCH_DELAY = .25f;
     private float touchDelay = 0;
 
     private Vector2 center;
@@ -30,6 +29,7 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
 
     public void update(float delta) {
         touchDelay += delta;
+        float MIN_TOUCH_DELAY = .25f;
         if (touchDelay > MIN_TOUCH_DELAY) {
             touchDelay = 0;
             if (Gdx.input.isTouched()) {
@@ -168,46 +168,57 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
     public boolean keyTyped(char character) {
         return false;
     }
+
     @Override
     public boolean touchDown(float screenX, float screenY, int pointer, int button) {
         return false;
     }
+
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         return false;
     }
+
     @Override
     public boolean scrolled(int amount) {
         return false;
     }
+
     @Override
     public boolean tap(float x, float y, int count, int button) {
         return false;
     }
+
     @Override
     public boolean longPress(float x, float y) {
         return false;
     }
+
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
         return false;
     }
+
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         return false;
     }
+
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
         return false;
     }
+
     @Override
     public boolean zoom(float initialDistance, float distance) {
         return false;
     }
+
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
         return false;
     }
+
     @Override
     public void pinchStop() {
 

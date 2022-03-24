@@ -9,32 +9,13 @@ import java.util.Set;
 
 public class Road implements Configurable {
 
-    public enum Type {
-        ROAD(false),
-        LOG(true),
-        TURTLE(true),
-        UNKNOWN(false);
-        final boolean dangerous;
-
-        Type(boolean dangerous) {
-            this.dangerous = dangerous;
-        }
-
-        public boolean isDangerous() {
-            return dangerous;
-        }
-    }
-
     private transient final Set<GameElement> elements = new HashSet<GameElement>(4);
-
     private float moveSpeed;
     private Direction direction;
     private Type type;
-
     private int entityCount;
     private float entityMinDistance;
     private float entityMaxDistance;
-
     private float offsetY;
 
     public Road(float moveSpeed, Direction direction, int entityCount, int entityMinDistance, int entityMaxDistance, float offsetY, Type type) {
@@ -158,5 +139,21 @@ public class Road implements Configurable {
                 ", entityMaxDistance=" + entityMaxDistance +
                 ", offsetY=" + offsetY +
                 '}';
+    }
+
+    public enum Type {
+        ROAD(false),
+        LOG(true),
+        TURTLE(true),
+        UNKNOWN(false);
+        final boolean dangerous;
+
+        Type(boolean dangerous) {
+            this.dangerous = dangerous;
+        }
+
+        public boolean isDangerous() {
+            return dangerous;
+        }
     }
 }

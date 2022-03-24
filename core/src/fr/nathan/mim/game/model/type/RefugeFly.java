@@ -11,10 +11,10 @@ import java.util.List;
 
 public class RefugeFly extends MovingEntity {
 
-    private transient float stateTime = 0;
-
     private final float changeSpotDelay;
     private final List<Vector2> positions;
+
+    private transient float stateTime = 0;
 
     public RefugeFly(RefugeFlyConfiguration flyConfiguration, RefugeConfiguration refugeFlyConfiguration) {
         this.changeSpotDelay = flyConfiguration.getChangeSpotDelay();
@@ -28,9 +28,8 @@ public class RefugeFly extends MovingEntity {
     }
 
     @Override
-    public void updateVelocity() {
+    public void updateVelocity() {}
 
-    }
     @Override
     public float getWidth() {
         return .5f;

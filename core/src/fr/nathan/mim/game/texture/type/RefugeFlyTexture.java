@@ -1,7 +1,6 @@
 package fr.nathan.mim.game.texture.type;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import fr.nathan.mim.game.model.type.Fly;
 import fr.nathan.mim.game.model.type.RefugeFly;
 import fr.nathan.mim.game.texture.TextureHolder;
 

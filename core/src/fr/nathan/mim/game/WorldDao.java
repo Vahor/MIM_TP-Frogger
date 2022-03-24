@@ -5,7 +5,12 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import fr.nathan.mim.game.config.Configurable;
-import fr.nathan.mim.game.model.type.*;
+import fr.nathan.mim.game.model.type.Fly;
+import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.Tree;
+import fr.nathan.mim.game.model.type.Turtle;
+import fr.nathan.mim.game.model.type.Vehicle;
+import fr.nathan.mim.game.model.type.World;
 
 public class WorldDao {
 

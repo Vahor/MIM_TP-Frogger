@@ -26,6 +26,7 @@ public abstract class GameElement implements Configurable, Collidable {
     public Road getRoad() {
         return road;
     }
+
     public void setRoad(Road road) {
         this.road = road;
     }
@@ -33,6 +34,7 @@ public abstract class GameElement implements Configurable, Collidable {
     public float getX() {
         return position.x;
     }
+
     public float getY() {
         return position.y;
     }

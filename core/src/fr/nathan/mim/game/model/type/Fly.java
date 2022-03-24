@@ -8,11 +8,10 @@ import fr.nathan.mim.game.model.MovingEntity;
 
 public class Fly extends MovingEntity {
 
-    private float stateTime;
-
     private final float delay;
+    private final float moveSpeed;
 
-    private float moveSpeed;
+    private float stateTime;
 
     private Vector2 direction;
     private Vector2 fromPoint;
@@ -21,7 +20,7 @@ public class Fly extends MovingEntity {
     private boolean leftToRight = false;
 
     public Fly(FlyConfiguration flyConfiguration) {
-        this.delay = flyConfiguration.getDelay();
+        this.delay     = flyConfiguration.getDelay();
         this.moveSpeed = flyConfiguration.getMoveSpeed();
     }
 
@@ -29,12 +28,12 @@ public class Fly extends MovingEntity {
         fromPoint = new Vector2(
                 0,
                 World.SHARED_RANDOM.nextFloat() * World.instance.getHeight());
-        toPoint = new Vector2(
-               World.instance.getWidth(),
+        toPoint   = new Vector2(
+                World.instance.getWidth(),
                 World.SHARED_RANDOM.nextFloat() * World.instance.getHeight());
 
         leftToRight = World.SHARED_RANDOM.nextBoolean();
-        if(leftToRight)
+        if (leftToRight)
             direction = toPoint.cpy().sub(fromPoint);
         else
             direction = fromPoint.cpy().sub(toPoint);
@@ -42,7 +41,7 @@ public class Fly extends MovingEntity {
 
     @Override
     public void updateVelocity() {
-        velocity.set(direction.cpy().scl(moveSpeed + (World.instance.getMoveSpeedBoost()*.1f)));
+        velocity.set(direction.cpy().scl(moveSpeed + (World.instance.getMoveSpeedBoost() * .1f)));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class Fly extends MovingEntity {
     @Override
     public void whenOutOfBorder(World world, float delta) {
         stateTime += delta;
-        if(stateTime > delay) {
+        if (stateTime > delay) {
             initRandomDirection();
             updateVelocity();
             position.set(leftToRight ? fromPoint : toPoint);

@@ -11,8 +11,8 @@ public class FlyConfiguration {
     }
 
     public FlyConfiguration(float delay, float moveSpeed) {
-        this.delay  = delay;
-        this.moveSpeed   = moveSpeed;
+        this.delay     = delay;
+        this.moveSpeed = moveSpeed;
     }
 
     public float getDelay() {

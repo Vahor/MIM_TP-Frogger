@@ -2,7 +2,6 @@ package fr.nathan.mim.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import fr.nathan.mim.game.WorldDao;
 import fr.nathan.mim.game.controller.WorldController;
@@ -24,9 +23,9 @@ public class GameScreen implements Screen {
 //        world = worldDao.get("config.json");
         worldDao.save("config.json", world);
 
-        worldRenderer = new WorldRenderer(world, batch);
+        worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world, batch);
-        inputHandler = new InputHandler(worldController);
+        inputHandler    = new InputHandler(worldController);
 
         Gdx.input.setInputProcessor(inputHandler);
 
