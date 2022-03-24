@@ -48,7 +48,7 @@ public class RefugeFly extends MovingEntity {
 
     @Override
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {
-        return CollideResult.DEAD;
+        return CollideResult.BLOCK;
     }
 
     @Override

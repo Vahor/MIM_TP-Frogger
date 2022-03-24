@@ -6,5 +6,6 @@ public enum CollideResult {
     DEAD,
     MISS,
     NOTHING,
+    BLOCK,
     RIDE
 }

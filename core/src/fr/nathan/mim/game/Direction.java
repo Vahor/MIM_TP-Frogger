@@ -26,4 +26,18 @@ public enum Direction {
     public int getMotY() {
         return motY;
     }
+
+    public Direction opposite() {
+        switch (this) {
+            case LEFT:
+                return RIGHT;
+            case RIGHT:
+                return LEFT;
+            case UP:
+                return DOWN;
+            default:
+            case DOWN:
+                return UP;
+        }
+    }
 }

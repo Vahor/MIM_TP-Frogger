@@ -58,8 +58,6 @@ public class Turtle extends MovingEntity {
 
         currentRideTime += delta;
 
-        frogger.getVelocity().set(getVelocity());
-
         if (currentRideTime > maxRideTime) {
             setState(State.SINK);
             getVelocity().set(0, 0);

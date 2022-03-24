@@ -63,7 +63,6 @@ public class Tree extends MovingEntity {
 
     @Override
     public CollideResult onCollideWith(MovingEntity frogger, float delta) {
-        frogger.getVelocity().set(getVelocity());
         return CollideResult.RIDE;
     }
 

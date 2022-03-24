@@ -153,10 +153,54 @@ public class WorldController extends Controller {
         teleportFroggerToSpawn();
     }
 
+    private void onFroggerRide(MovingEntity element) {
+        Frogger frogger = world.getFrogger();
+        frogger.getVelocity().set(element.getVelocity());
+    }
+
     private void teleportFroggerToSpawn() {
         Frogger frogger = world.getFrogger();
         frogger.setDirection(Direction.UP);
         frogger.getPosition().set(frogger.getStartingPosition());
+    }
+
+    private void blockFrogger(GameElement element) {
+        Frogger frogger = world.getFrogger();
+        Direction direction = frogger.getDirection();
+        Direction opposite = direction.opposite();
+        frogger.getPosition().y += opposite.getMotY() * element.getHeight();
+        frogger.getPosition().x += opposite.getMotX() * element.getWidth();
+    }
+
+    /**
+     *
+     * @param collideResult
+     * @param element
+     * @return True si l'action bloque les autres actions
+     */
+    private boolean resultCollideWith(CollideResult collideResult, GameElement element) {
+
+        if (collideResult == CollideResult.BLOCK) {
+            blockFrogger(element);
+            return true;
+        }
+
+        if (collideResult == CollideResult.DEAD) {
+            System.out.println(":( element " + element.getClass());
+            onFroggerDie();
+            return true;
+        }
+
+        if (collideResult == CollideResult.RIDE && element instanceof MovingEntity) {
+            onFroggerRide((MovingEntity) element);
+            return true;
+        }
+
+        if (collideResult == CollideResult.WIN) {
+            onFroggerWin();
+            return true;
+        }
+        return false;
     }
 
     private void handleCollisions(float delta) {
@@ -166,29 +210,15 @@ public class WorldController extends Controller {
         for (Road road : world.getRoads()) {
             for (GameElement element : road.getElements()) {
                 CollideResult collideResult = element.handleCollision(frogger, delta);
-                if (collideResult == CollideResult.MISS) continue;
-                if (collideResult == CollideResult.RIDE) return;
-                if (collideResult == CollideResult.DEAD) {
-                    System.out.println(":( element " + element.getClass());
-                    onFroggerDie();
-                    return;
-                }
+                boolean b = resultCollideWith(collideResult, element);
+                if (b) return;
             }
         }
 
         for (GameElement element : world.getElements()) {
             CollideResult collideResult = element.handleCollision(frogger, delta);
-            if (collideResult == CollideResult.MISS) continue;
-            if (collideResult == CollideResult.DEAD) {
-                System.out.println(":( item");
-                onFroggerDie();
-                return;
-            }
-
-            if (collideResult == CollideResult.WIN) {
-                onFroggerWin();
-                return;
-            }
+            boolean b = resultCollideWith(collideResult, element);
+            if (b) return;
         }
 
         // Handle water
