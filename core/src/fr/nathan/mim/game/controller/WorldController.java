@@ -294,10 +294,6 @@ public class WorldController extends Controller {
 
                     offsetX -= (road.getRandomOffsetX() - road.getEntityMinDistance());
 
-                    // todo le - road.getEntityMin n'est pas bon dans tous les cas, il faudrait le faire que dans un seul if
-                    //  Si l'entité est hors de l'écran, on lui donne l'offset entier
-                    //  Si elle est sur l'ecran, on sait qu'il y a déjà la distance minimale grâce au if, donc on peut faire le -
-
                     for (GameElement element : world.generateElement(road)) {
                         offsetX -= element.getWidth();
                         element.getPosition().x = offsetX;

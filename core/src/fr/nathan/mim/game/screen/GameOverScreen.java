@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.nathan.mim.game.Client;
 import fr.nathan.mim.game.model.type.World;
 import fr.nathan.mim.game.texture.TextureFactory;
@@ -17,10 +18,14 @@ public class GameOverScreen implements Screen, InputProcessor {
     private final GlyphLayout glyphLayout = new GlyphLayout();
     private final Batch batch;
     private final World world;
+    private final FitViewport viewport;
 
     public GameOverScreen(World world, Batch batch) {
         this.world = world;
         this.batch = batch;
+
+        viewport = new FitViewport(600, 730);
+        viewport.apply();
 
         Gdx.input.setInputProcessor(this);
     }
@@ -29,24 +34,42 @@ public class GameOverScreen implements Screen, InputProcessor {
     public void render(float delta) {
         batch.begin();
 
+
+        float width = viewport.getWorldWidth();
+        float height = viewport.getWorldHeight();
+
+        batch.draw(
+                TextureFactory.getInstance().getBackgroundBlur(),
+                0,
+                0,
+                width,
+                height
+        );
+
         BitmapFont font = TextureFactory.getInstance().getFont();
 
         glyphLayout.setText(font, "Perdu !");
         font.draw(batch, glyphLayout,
-                (Gdx.graphics.getWidth() - glyphLayout.width) / 2,
-                (Gdx.graphics.getHeight() - glyphLayout.height) / 2);
+                (width - glyphLayout.width) / 2f,
+                (height - glyphLayout.height + 100) / 2f);
 
 
         glyphLayout.setText(font, "Score : " + world.getScore());
         font.draw(batch, glyphLayout,
-                (Gdx.graphics.getWidth() - glyphLayout.width) / 2,
-                (Gdx.graphics.getHeight() - glyphLayout.height - 50) / 2);
+                (width - glyphLayout.width) / 2f,
+                (height - glyphLayout.height - 50) / 2);
+
+        glyphLayout.setText(font,
+                "Temps : " + new Float(world.getMaxTime() - world.getCurrentTime()).intValue() + "s");
+        font.draw(batch, glyphLayout,
+                (width - glyphLayout.width) / 2f,
+                (height - glyphLayout.height - 90) / 2);
 
 
         glyphLayout.setText(font, "Clique pour recommencer");
         font.draw(batch, glyphLayout,
-                (Gdx.graphics.getWidth() - glyphLayout.width) / 2,
-                (Gdx.graphics.getHeight() - glyphLayout.height - 150) / 2);
+                (width - glyphLayout.width) / 2,
+                (height - glyphLayout.height - 180) / 2);
 
 
         batch.end();
@@ -63,12 +86,12 @@ public class GameOverScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public void show() {
-
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void show() {
 
     }
 

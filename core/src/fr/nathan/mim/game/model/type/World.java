@@ -110,6 +110,10 @@ public class World implements Configurable {
         this.currentTime = currentTime;
     }
 
+    public float getMaxTime() {
+        return maxTime;
+    }
+
     public long getScore() {
         return score;
     }
@@ -221,7 +225,7 @@ public class World implements Configurable {
         maxTime            = 60;
         speedBoostPerScore = .005f;
 
-        maxLives = 5;
+        maxLives = 1;
 
         froggerConfiguration   = new FroggerConfiguration(
                 .05f,
@@ -230,7 +234,7 @@ public class World implements Configurable {
         turtleConfiguration    = new TurtleConfiguration(3, 3f, 1, 3);
         flyConfiguration       = new FlyConfiguration(
                 3,
-                .4f
+                1f
         );
         refugeFlyConfiguration = new RefugeFlyConfiguration(1);
 

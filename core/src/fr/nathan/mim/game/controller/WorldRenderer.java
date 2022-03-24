@@ -24,16 +24,20 @@ public class WorldRenderer extends Controller {
     DebugRenderer debugRenderer;
     GlyphLayout glyphLayout = new GlyphLayout();
 
-    private float pixelsPerUnitX;
-    private float pixelsPerUnitY;
+    private final float pixelsPerUnitX;
+    private final float pixelsPerUnitY;
 
     public WorldRenderer(World world, Batch batch) {
         super(world, batch);
+        debugRenderer = new DebugRenderer(this);
+
         camera   = new OrthographicCamera(world.getWidth(), world.getHeight());
         viewport = new FitViewport(600, 690, camera);
         viewport.apply();
 
-        debugRenderer = new DebugRenderer(this);
+
+        pixelsPerUnitX = camera.viewportWidth / world.getWidth();
+        pixelsPerUnitY = camera.viewportHeight / world.getHeight();
 
     }
 
@@ -47,9 +51,6 @@ public class WorldRenderer extends Controller {
 
     public void resize(float width, float height) {
         viewport.update((int) width, (int) height, true);
-
-        pixelsPerUnitX = camera.viewportWidth / world.getWidth();
-        pixelsPerUnitY = camera.viewportHeight / world.getHeight();
     }
 
     public void drawBackground() {

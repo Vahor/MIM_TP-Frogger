@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.type.Fly;
@@ -30,13 +31,22 @@ public class TextureFactory {
 
     private final Map<Class<? extends GameElement>, TextureHolder<? extends GameElement>> textureMap = new HashMap<Class<? extends GameElement>, TextureHolder<? extends GameElement>>();
 
+    private final Texture logo;
     private final Texture background;
+    private final Texture background_blur;
+    private final Skin rainbowUISkin;
     private final BitmapFont font;
 
     public TextureFactory() {
-        background = new Texture(Gdx.files.internal("background.png"));
-        font       = new BitmapFont(Gdx.files.internal("font/font.fnt"));
-        font.getData().setScale(.45f);
+
+        logo            = new Texture(Gdx.files.internal("logo.png"));
+
+        background      = new Texture(Gdx.files.internal("background.png"));
+        background_blur = new Texture(Gdx.files.internal("background_blur.png"));
+
+        font          = new BitmapFont(Gdx.files.internal("pack/freezing/raw/font-export.fnt"));
+        rainbowUISkin = new Skin(Gdx.files.internal("pack/freezing/skin/freezing-ui.json"));
+
         font.setUseIntegerPositions(false);
 
         // Frogger
@@ -85,7 +95,17 @@ public class TextureFactory {
         return background;
     }
 
+    public Texture getBackgroundBlur() {
+        return background_blur;
+    }
+
+    public Texture getLogo() {return logo;}
+
     public BitmapFont getFont() {
         return font;
+    }
+
+    public Skin getSkin() {
+        return rainbowUISkin;
     }
 }

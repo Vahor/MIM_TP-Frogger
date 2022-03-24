@@ -77,13 +77,13 @@ public class DebugRenderer extends Controller {
             font.draw(batch,
                     road.getType().name() + " - " + road.getDirection().name(),
                     10,
-                    (road.getOffsetY() + .2f) * worldRenderer.getPixelsPerUnitY());
+                    (road.getOffsetY() + .3f) * worldRenderer.getPixelsPerUnitY());
             font.draw(batch,
                     road.getOffsetY() +
                             " - [" + road.getEntityMinDistance() + ", " + road.getEntityMaxDistance() + "]"
                             + " - " + road.getElements().size() + "/" + road.getEntityCount(),
                     10,
-                    (road.getOffsetY() + .5f) * worldRenderer.getPixelsPerUnitY());
+                    (road.getOffsetY() + .6f) * worldRenderer.getPixelsPerUnitY());
 
             for (GameElement element : road.getElements()) {
 

@@ -37,11 +37,14 @@ public class Fly extends MovingEntity {
             direction = toPoint.cpy().sub(fromPoint);
         else
             direction = fromPoint.cpy().sub(toPoint);
+
+        // Normalize
+        direction.nor();
     }
 
     @Override
     public void updateVelocity() {
-        velocity.set(direction.cpy().scl(moveSpeed + (World.instance.getMoveSpeedBoost() * .1f)));
+        velocity.set(direction.cpy().scl(moveSpeed + (World.instance.getMoveSpeedBoost())));
     }
 
     @Override

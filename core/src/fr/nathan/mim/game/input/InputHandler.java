@@ -34,7 +34,6 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
             touchDelay = 0;
             if (Gdx.input.isTouched()) {
                 Vector2 currentPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                // todo sauvegarder la variable de Vector2d du centre de l'écran ? Avec une méthode dans resize ?
                 handleMovement(
                         center,
                         currentPoint

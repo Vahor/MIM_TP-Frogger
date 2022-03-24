@@ -1,63 +1,124 @@
 package fr.nathan.mim.game.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.nathan.mim.game.Client;
 import fr.nathan.mim.game.texture.TextureFactory;
 
-public class StartScreen implements Screen, InputProcessor {
+public class StartScreen implements Screen {
 
-    private final GlyphLayout glyphLayout = new GlyphLayout();
     private final Batch batch;
+    private final FitViewport viewport;
 
-    public StartScreen(Batch batch) {
+    private Stage stage;
+
+    public StartScreen(final Batch batch) {
         this.batch = batch;
-        Gdx.input.setInputProcessor(this);
+        viewport   = new FitViewport(600, 730);
+        viewport.apply();
+
+        stage = new Stage(viewport);
+
+
+        TextButton button = new TextButton(
+                " Cliques pour jouer ",
+                TextureFactory.getInstance().getSkin());
+        button.pad(30);
+
+        button.setPosition(
+                (viewport.getWorldWidth() - button.getWidth()) / 2,
+                (viewport.getWorldHeight() - button.getHeight() - 150) / 2
+        );
+
+        button.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                Client.getInstance().setScreen(new GameScreen(batch));
+                return true;
+            }
+        });
+
+        stage.addActor(button);
+
+        ////
+        TextButton quitter = new TextButton(
+                " Quitter ",
+                TextureFactory.getInstance().getSkin());
+        quitter.pad(30);
+
+        quitter.setPosition(
+                (viewport.getWorldWidth() - quitter.getWidth()) / 2,
+                button.getY() - 80
+        );
+
+        quitter.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.exit();
+                return true;
+            }
+        });
+
+        stage.addActor(quitter);
+
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
+
+
         batch.begin();
 
-        BitmapFont font = TextureFactory.getInstance().getFont();
 
-        glyphLayout.setText(font, "Frogger !");
-        font.draw(batch, glyphLayout,
-                (Gdx.graphics.getWidth() - glyphLayout.width) / 2,
-                (Gdx.graphics.getHeight() - glyphLayout.height) / 2);
+        float width = viewport.getWorldWidth();
+        float height = viewport.getWorldHeight();
 
+        batch.draw(
+                TextureFactory.getInstance().getBackgroundBlur(),
+                0,
+                0,
+                width,
+                height
+        );
 
-        glyphLayout.setText(font, "Clique pour jouer");
-        font.draw(batch, glyphLayout,
-                (Gdx.graphics.getWidth() - glyphLayout.width) / 2,
-                (Gdx.graphics.getHeight() - glyphLayout.height - 50) / 2);
-
+        TextureRegion logo = new TextureRegion(TextureFactory.getInstance().getLogo());
+        float logoWidth = width / 2f;
+        float logoHeight = logoWidth * 1.6f;
+        batch.draw(
+                logo,
+                width / 2f - logoWidth / 2f,
+                height / 3,
+                logoWidth / 2f,
+                logoHeight / 2f,
+                logoWidth,
+                logoHeight,
+                1,
+                1,
+                -45
+        );
 
         batch.end();
-    }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Client.getInstance().setScreen(new GameScreen(batch));
-        return true;
-    }
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public void show() {
-
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
+
+    @Override
+    public void show() {
 
     }
 
@@ -73,41 +134,11 @@ public class StartScreen implements Screen, InputProcessor {
 
     @Override
     public void hide() {
-
+        stage.dispose();
     }
 
     @Override
     public void dispose() {
 
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 }
