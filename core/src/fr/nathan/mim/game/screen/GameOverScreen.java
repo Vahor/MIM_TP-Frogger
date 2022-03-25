@@ -17,12 +17,14 @@ public class GameOverScreen implements Screen, InputProcessor {
 
     private final GlyphLayout glyphLayout = new GlyphLayout();
     private final Batch batch;
+    private final boolean isWin;
     private final World world;
     private final FitViewport viewport;
 
-    public GameOverScreen(World world, Batch batch) {
+    public GameOverScreen(World world, Batch batch, boolean isWin) {
         this.world = world;
         this.batch = batch;
+        this.isWin = isWin;
 
         viewport = new FitViewport(600, 730);
         viewport.apply();
@@ -48,7 +50,7 @@ public class GameOverScreen implements Screen, InputProcessor {
 
         BitmapFont font = TextureFactory.getInstance().getFont();
 
-        glyphLayout.setText(font, "Perdu !");
+        glyphLayout.setText(font, isWin ? "Gagne !" : "Perdu !");
         font.draw(batch, glyphLayout,
                 (width - glyphLayout.width) / 2f,
                 (height - glyphLayout.height + 100) / 2f);

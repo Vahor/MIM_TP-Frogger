@@ -11,6 +11,7 @@ import fr.nathan.mim.game.controller.WorldRenderer;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.type.Fly;
 import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.Refuge;
 import fr.nathan.mim.game.model.type.RefugeFly;
 import fr.nathan.mim.game.model.type.Tree;
 import fr.nathan.mim.game.model.type.Turtle;
@@ -18,6 +19,7 @@ import fr.nathan.mim.game.model.type.Vehicle;
 import fr.nathan.mim.game.texture.type.FlyTexture;
 import fr.nathan.mim.game.texture.type.FroggerTexture;
 import fr.nathan.mim.game.texture.type.RefugeFlyTexture;
+import fr.nathan.mim.game.texture.type.RefugeTexture;
 import fr.nathan.mim.game.texture.type.TreeTexture;
 import fr.nathan.mim.game.texture.type.TurtleTexture;
 import fr.nathan.mim.game.texture.type.VehicleTexture;
@@ -39,7 +41,7 @@ public class TextureFactory {
 
     public TextureFactory() {
 
-        logo            = new Texture(Gdx.files.internal("logo.png"));
+        logo = new Texture(Gdx.files.internal("logo.png"));
 
         background      = new Texture(Gdx.files.internal("background.png"));
         background_blur = new Texture(Gdx.files.internal("background_blur.png"));
@@ -70,6 +72,7 @@ public class TextureFactory {
         textureMap.put(Vehicle.class, new VehicleTexture(new TextureAtlas(Gdx.files.internal("vehicle/vehicle.pack"))));
         textureMap.put(Fly.class, new FlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
         textureMap.put(RefugeFly.class, new RefugeFlyTexture(new TextureRegion(new Texture(Gdx.files.internal("fly/idle_00.png")))));
+        textureMap.put(Refuge.class, new RefugeTexture(froggerAtlas.findRegion("idle")));
     }
 
     public static TextureFactory getInstance() {

@@ -7,6 +7,7 @@ import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.Refuge;
 import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
 import fr.nathan.mim.game.screen.GameOverScreen;
@@ -151,7 +152,7 @@ public class WorldController extends Controller {
         frogger.onDied();
         world.setRemainingLives(world.getRemainingLives() - 1);
         if (world.getRemainingLives() <= 0) {
-            Client.getInstance().setScreen(new GameOverScreen(world, batch));
+            Client.getInstance().setScreen(new GameOverScreen(world, batch, false));
             return;
         }
         teleportFroggerToSpawn();
@@ -242,9 +243,19 @@ public class WorldController extends Controller {
         world.setScore(world.getScore() + 100);
         world.setSuccessMessageTime(3);
 
+        // Check win
+        boolean hasEmptyRefuge = false;
+
+
         for (GameElement element : world.getElements()) {
             if (element instanceof MovingEntity) {
                 ((MovingEntity) element).updateVelocity();
+            }
+
+            if (element instanceof Refuge) {
+                if (!((Refuge) element).isOccupied()) {
+                    hasEmptyRefuge = true;
+                }
             }
         }
 
@@ -254,6 +265,10 @@ public class WorldController extends Controller {
                     ((MovingEntity) element).updateVelocity();
                 }
             }
+        }
+
+        if (!hasEmptyRefuge) {
+            Client.getInstance().setScreen(new GameOverScreen(world, batch, true));
         }
 
     }
@@ -330,7 +345,7 @@ public class WorldController extends Controller {
 
     private void checkAndUpdateTime(float delta) {
         if (world.getCurrentTime() <= 0) {
-            Client.getInstance().setScreen(new GameOverScreen(world, batch));
+            Client.getInstance().setScreen(new GameOverScreen(world, batch, false));
             return;
         }
 

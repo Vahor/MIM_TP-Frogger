@@ -3,22 +3,31 @@ package fr.nathan.mim.game.model.type;
 import com.badlogic.gdx.math.Vector2;
 import fr.nathan.mim.game.CollideResult;
 import fr.nathan.mim.game.Direction;
-import fr.nathan.mim.game.config.RefugeConfiguration;
 import fr.nathan.mim.game.config.RefugeFlyConfiguration;
 import fr.nathan.mim.game.model.MovingEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RefugeFly extends MovingEntity {
 
     private final float changeSpotDelay;
-    private final List<Vector2> positions;
+    private final List<Refuge> refuges = new ArrayList<Refuge>(5);
+
+    private static final Vector2 OUT_OF_SCREEN = new Vector2(-100, -100);
 
     private transient float stateTime = 0;
 
-    public RefugeFly(RefugeFlyConfiguration flyConfiguration, RefugeConfiguration refugeFlyConfiguration) {
+    public RefugeFly(RefugeFlyConfiguration flyConfiguration) {
         this.changeSpotDelay = flyConfiguration.getChangeSpotDelay();
-        this.positions       = refugeFlyConfiguration.getPositions();
+    }
+
+    public void addRefuge(Refuge refuge) {
+        refuges.add(refuge);
+    }
+
+    public void removeRefuge(Refuge refuge) {
+        refuges.remove(refuge);
     }
 
     @Override
@@ -66,6 +75,17 @@ public class RefugeFly extends MovingEntity {
     }
 
     public Vector2 getNextPosition() {
-        return positions.get(World.SHARED_RANDOM.nextInt(positions.size()));
+        if (refuges.size() == 1) {
+            if (World.SHARED_RANDOM.nextBoolean())
+                return OUT_OF_SCREEN;
+        }
+
+        Refuge refuge = refuges.get(World.SHARED_RANDOM.nextInt(refuges.size()));
+        if (refuge.isOccupied()) {
+            removeRefuge(refuge);
+            return getNextPosition();
+        }
+
+        return refuge.getPosition();
     }
 }

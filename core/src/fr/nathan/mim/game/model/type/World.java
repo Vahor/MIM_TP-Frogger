@@ -197,16 +197,18 @@ public class World implements Configurable {
         frogger.getPosition().set(froggerConfiguration.getStartingPosition());
 
         elements.add(new Fly(flyConfiguration));
-        elements.add(new RefugeFly(refugeFlyConfiguration, refugeConfiguration));
 
         for (GameElement element : elements) {
             element.afterInitialisation();
         }
 
+        RefugeFly refugeFly = new RefugeFly(refugeFlyConfiguration);
+        elements.add(refugeFly);
         for (Vector2 position : refugeConfiguration.getPositions()) {
             Refuge refuge = new Refuge();
             refuge.getPosition().set(position);
             elements.add(refuge);
+            refugeFly.addRefuge(refuge);
         }
 
         remainingLives = maxLives;
@@ -283,10 +285,6 @@ public class World implements Configurable {
                 road.addElement(element);
             }
         }
-
-
-        elements.add(new Fly(flyConfiguration));
-        elements.add(new RefugeFly(refugeFlyConfiguration, refugeConfiguration));
 
         init();
     }
