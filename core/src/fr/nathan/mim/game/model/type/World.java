@@ -210,6 +210,8 @@ public class World implements Configurable {
             elements.add(refuge);
             refugeFly.addRefuge(refuge);
         }
+        refugeFly.getPosition().set(refugeFly.getNextPosition());
+
 
         remainingLives = maxLives;
 
@@ -225,14 +227,18 @@ public class World implements Configurable {
         width              = 8;
         height             = 13.5f;
         maxTime            = 60;
-        speedBoostPerScore = .005f;
+        speedBoostPerScore = .003f;
 
         maxLives = 1;
 
         froggerConfiguration   = new FroggerConfiguration(
                 .05f,
                 1,
-                new Vector2(width / 2 - .25f, .15f));
+                new Vector2(width / 2 - .25f, .15f),
+                .1f,
+                2f,
+                1.5f,
+                2);
         turtleConfiguration    = new TurtleConfiguration(3, 3f, 1, 3);
         flyConfiguration       = new FlyConfiguration(
                 3,

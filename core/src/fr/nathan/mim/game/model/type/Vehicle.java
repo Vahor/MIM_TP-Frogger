@@ -22,7 +22,10 @@ public class Vehicle extends MovingEntity {
     }
 
     @Override
-    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+    public CollideResult onCollideWith(MovingEntity entity, float delta) {
+        if (!(entity instanceof Frogger))
+            return CollideResult.NOTHING;
+
         return CollideResult.DEAD;
     }
 
@@ -32,6 +35,11 @@ public class Vehicle extends MovingEntity {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean whenOutOfBorder(World world, float delta) {
+        return true;
     }
 
     @Override

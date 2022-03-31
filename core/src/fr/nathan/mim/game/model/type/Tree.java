@@ -36,7 +36,15 @@ public class Tree extends MovingEntity {
     }
 
     @Override
-    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+    public boolean whenOutOfBorder(World world, float delta) {
+        return true;
+    }
+
+    @Override
+    public CollideResult onCollideWith(MovingEntity entity, float delta) {
+        if (!(entity instanceof Frogger))
+            return CollideResult.NOTHING;
+
         return CollideResult.RIDE;
     }
 

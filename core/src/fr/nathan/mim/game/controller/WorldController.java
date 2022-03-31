@@ -7,6 +7,7 @@ import fr.nathan.mim.game.Direction;
 import fr.nathan.mim.game.model.GameElement;
 import fr.nathan.mim.game.model.MovingEntity;
 import fr.nathan.mim.game.model.type.Frogger;
+import fr.nathan.mim.game.model.type.FroggerTongue;
 import fr.nathan.mim.game.model.type.Refuge;
 import fr.nathan.mim.game.model.type.Road;
 import fr.nathan.mim.game.model.type.World;
@@ -32,6 +33,18 @@ public class WorldController extends Controller {
     }
 
     public World getWorld() {return world;}
+
+    public void onSpacePressed() {
+        pressedKeys.put(Keys.SPACE, true);
+    }
+
+    public void onSpaceReleased() {
+        pressedKeys.put(Keys.SPACE, false);
+    }
+
+    public boolean isSpacePressed() {
+        return pressedKeys.get(Keys.SPACE);
+    }
 
     public void onLeftPressed() {
         pressedKeys.put(Keys.LEFT, true);
@@ -85,6 +98,14 @@ public class WorldController extends Controller {
         Frogger frogger = world.getFrogger();
         if (frogger.getState() != Frogger.State.IDLE) return;
 
+        if (isSpacePressed()) {
+            if (frogger.canShoot()) {
+                froggerShoot();
+                return;
+            }
+        }
+
+        // Handle jump
         if (isLeftPressed()) {
             frogger.setDirection(Direction.LEFT);
         }
@@ -118,8 +139,7 @@ public class WorldController extends Controller {
                     || element.getY() > world.getHeight() - element.getHeight()
                     || element.getY() < 0
             ) {
-                element.whenOutOfBorder(world, delta);
-                return true;
+                return element.whenOutOfBorder(world, delta);
             }
         }
         else {
@@ -128,8 +148,7 @@ public class WorldController extends Controller {
                     || element.getY() > world.getHeight() - element.getHeight()
                     || element.getY() < 0
             ) {
-                element.whenOutOfBorder(world, delta);
-                return true;
+                return element.whenOutOfBorder(world, delta);
             }
         }
 
@@ -144,6 +163,11 @@ public class WorldController extends Controller {
         ) {
             element.whenOutOfBorder(world, delta);
         }
+    }
+
+    private void onFroggerEat() {
+        world.setRemainingLives(world.getRemainingLives() + 1);
+        world.setScore(world.getScore() + 50);
     }
 
     private void onFroggerDie() {
@@ -177,6 +201,16 @@ public class WorldController extends Controller {
         frogger.getPosition().x += opposite.getMotX() * element.getWidth();
     }
 
+    public void froggerShoot() {
+        Frogger frogger = world.getFrogger();
+        if (frogger.getState() == Frogger.State.IDLE) {
+            frogger.onShootStart();
+            world.getElements().add(
+                    new FroggerTongue(frogger)
+            );
+        }
+    }
+
     /**
      * @param collideResult Le résultat de la collision.
      * @param element L'élément avec lequel le Frogger est entré en collision.
@@ -195,6 +229,11 @@ public class WorldController extends Controller {
             return true;
         }
 
+        if (collideResult == CollideResult.EAT) {
+            onFroggerEat();
+            return true;
+        }
+
         if (collideResult == CollideResult.RIDE && element instanceof MovingEntity) {
             onFroggerRide((MovingEntity) element);
             return true;
@@ -208,22 +247,19 @@ public class WorldController extends Controller {
     }
 
     private void handleCollisions(float delta) {
-        Frogger frogger = world.getFrogger();
-        if (frogger.getState() != Frogger.State.IDLE) return;
 
-        for (Road road : world.getRoads()) {
-            for (GameElement element : road.getElements()) {
-                CollideResult collideResult = element.handleCollision(frogger, delta);
-                boolean b = resultCollideWith(collideResult, element);
-                if (b) return;
+        // On parcourt les éléments du monde, et on vérifie les collisions
+        for (GameElement worldElement : world.getElements()) {
+            if (worldElement instanceof MovingEntity && ((MovingEntity) worldElement).watchCollide()) {
+                testCollision(delta, (MovingEntity) worldElement);
             }
         }
 
-        for (GameElement element : world.getElements()) {
-            CollideResult collideResult = element.handleCollision(frogger, delta);
-            boolean b = resultCollideWith(collideResult, element);
-            if (b) return;
-        }
+        // On test la collision avec le frogger
+        Frogger frogger = world.getFrogger();
+        if (frogger.getState() != Frogger.State.IDLE) return;
+
+        if (testCollision(delta, frogger)) return;
 
         // Handle water
         for (Road road : world.getRoads()) {
@@ -238,6 +274,25 @@ public class WorldController extends Controller {
 
     }
 
+    private boolean testCollision(float delta, MovingEntity entity) {
+        for (Road road : world.getRoads()) {
+            for (GameElement element : road.getElements()) {
+                CollideResult collideResult = element.handleCollision(entity, delta);
+                boolean b = resultCollideWith(collideResult, element);
+                if (b) return true;
+            }
+        }
+
+        for (GameElement element : world.getElements()) {
+            if (element.isVisible() && element != entity) {
+                CollideResult collideResult = element.handleCollision(entity, delta);
+                boolean b = resultCollideWith(collideResult, element);
+                if (b) return true;
+            }
+        }
+        return false;
+    }
+
     private void onFroggerWin() {
         teleportFroggerToSpawn();
         world.setScore(world.getScore() + 100);
@@ -248,22 +303,18 @@ public class WorldController extends Controller {
 
 
         for (GameElement element : world.getElements()) {
-            if (element instanceof MovingEntity) {
-                ((MovingEntity) element).updateVelocity();
-            }
-
             if (element instanceof Refuge) {
                 if (!((Refuge) element).isOccupied()) {
                     hasEmptyRefuge = true;
                 }
             }
+
+            element.onLevelRestart();
         }
 
         for (Road road : world.getRoads()) {
             for (GameElement element : road.getElements()) {
-                if (element instanceof MovingEntity) {
-                    ((MovingEntity) element).updateVelocity();
-                }
+                element.onLevelRestart();
             }
         }
 
@@ -372,9 +423,13 @@ public class WorldController extends Controller {
                 tryToAddElements(road);
             }
 
+            Set<GameElement> removeElementsList = new HashSet<GameElement>(4, 1);
             for (GameElement element : world.getElements()) {
-                update(element, delta);
+                boolean toRemove = update(element, delta);
+                if (toRemove)
+                    removeElementsList.add(element);
             }
+            world.getElements().removeAll(removeElementsList);
 
             handleCollisions(delta);
 
@@ -386,7 +441,7 @@ public class WorldController extends Controller {
     }
 
     enum Keys {
-        LEFT, RIGHT, UP, DOWN
+        LEFT, RIGHT, UP, DOWN, SPACE
     }
 
 }

@@ -17,9 +17,24 @@ public abstract class MovingEntity extends GameElement {
         position.add(velocity.cpy().scl(delta));
     }
 
-    public void whenOutOfBorder(World world, float delta) {}
+
+    public boolean watchCollide() {
+        return false;
+    }
+
+    @Override
+    public void onLevelRestart() {
+        updateVelocity();
+    }
+
+    /**
+     * @return true if the entity should be removed
+     */
+    public boolean whenOutOfBorder(World world, float delta) {return false;}
 
     public void updateVelocity() {
+        System.out.println("MovingEntity.updateVelocity");
+        System.out.println("Class: " + this.getClass().getName());
         float speedBoost = World.instance.getMoveSpeedBoost();
         getVelocity().set(
                 getRoad().getDirection().getMotX() * (getRoad().getMoveSpeed() + speedBoost),

@@ -62,7 +62,7 @@ public abstract class GameElement implements Configurable, Collidable {
     public void afterInitialisation() {}
 
     // return DEAD : end game
-    public CollideResult onCollideWith(MovingEntity frogger, float delta) {return CollideResult.NOTHING;}
+    public CollideResult onCollideWith(MovingEntity element, float delta) {return CollideResult.NOTHING;}
 
     public CollideResult handleCollision(MovingEntity element, float delta) {
         if (collideWith(element)) {
@@ -70,6 +70,8 @@ public abstract class GameElement implements Configurable, Collidable {
         }
         return CollideResult.MISS;
     }
+
+    public void onLevelRestart(){}
 
     @Override
     public String toString() {

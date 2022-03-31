@@ -17,6 +17,7 @@ public class RefugeFly extends MovingEntity {
     private static final Vector2 OUT_OF_SCREEN = new Vector2(-100, -100);
 
     private transient float stateTime = 0;
+    private boolean alive = true;
 
     public RefugeFly(RefugeFlyConfiguration flyConfiguration) {
         this.changeSpotDelay = flyConfiguration.getChangeSpotDelay();
@@ -30,6 +31,10 @@ public class RefugeFly extends MovingEntity {
         refuges.remove(refuge);
     }
 
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
     @Override
     public void afterInitialisation() {
         super.afterInitialisation();
@@ -38,6 +43,11 @@ public class RefugeFly extends MovingEntity {
 
     @Override
     public void updateVelocity() {}
+
+    @Override
+    public boolean isVisible() {
+        return alive;
+    }
 
     @Override
     public float getWidth() {
@@ -55,7 +65,12 @@ public class RefugeFly extends MovingEntity {
     }
 
     @Override
-    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+    public CollideResult onCollideWith(MovingEntity entity, float delta) {
+        if (entity instanceof FroggerTongue) {
+            setAlive(false);
+            entity.onCollideWith(this, delta);
+            return CollideResult.EAT;
+        }
         return CollideResult.BLOCK;
     }
 
@@ -72,6 +87,11 @@ public class RefugeFly extends MovingEntity {
             getPosition().set(getNextPosition());
             stateTime = 0;
         }
+    }
+
+    @Override
+    public void onLevelRestart() {
+        alive = true;
     }
 
     public Vector2 getNextPosition() {

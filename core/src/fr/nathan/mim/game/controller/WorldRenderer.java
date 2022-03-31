@@ -67,7 +67,7 @@ public class WorldRenderer extends Controller {
         if (!element.isVisible()) return;
         TextureRegion region = TextureFactory.getInstance().getTexture(element);
         if (region == null) {
-            System.out.println("element = " + element.getClass());
+//            System.out.println("element = " + element.getClass());
             return;
         }
 
@@ -106,6 +106,10 @@ public class WorldRenderer extends Controller {
         font.draw(batch, "Nombre de vies : " + world.getRemainingLives(),
                 0,
                 14 * pixelsPerUnitY);
+
+        font.draw(batch, "Tirs : " + world.getFrogger().getTongueCount(),
+                0,
+                14.3f * pixelsPerUnitY);
 
 
         glyphLayout.setText(font, "Temps restant : " + world.getCurrentTime().intValue() + "s");

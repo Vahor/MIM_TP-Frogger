@@ -7,5 +7,6 @@ public enum CollideResult {
     MISS,
     NOTHING,
     BLOCK,
-    RIDE
+    RIDE,
+    EAT
 }

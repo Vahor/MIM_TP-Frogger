@@ -18,6 +18,7 @@ public class Fly extends MovingEntity {
     private Vector2 toPoint;
 
     private boolean leftToRight = false;
+    private boolean alive = true;
 
     public Fly(FlyConfiguration flyConfiguration) {
         this.delay     = flyConfiguration.getDelay();
@@ -57,7 +58,7 @@ public class Fly extends MovingEntity {
     }
 
     @Override
-    public void whenOutOfBorder(World world, float delta) {
+    public boolean whenOutOfBorder(World world, float delta) {
         stateTime += delta;
         if (stateTime > delay) {
             initRandomDirection();
@@ -65,6 +66,11 @@ public class Fly extends MovingEntity {
             position.set(leftToRight ? fromPoint : toPoint);
             stateTime = 0;
         }
+        return false;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override
@@ -94,11 +100,21 @@ public class Fly extends MovingEntity {
 
     @Override
     public boolean isVisible() {
-        return true;
+        return alive;
     }
 
     @Override
-    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+    public void onLevelRestart() {
+        alive = true;
+    }
+
+    @Override
+    public CollideResult onCollideWith(MovingEntity entity, float delta) {
+        if (entity instanceof FroggerTongue) {
+            setAlive(false);
+            entity.onCollideWith(this, delta);
+            return CollideResult.EAT;
+        }
         return CollideResult.DEAD;
     }
 }

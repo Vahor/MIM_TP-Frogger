@@ -12,6 +12,11 @@ public class Frogger extends MovingEntity {
     private final float jumpDistance;
     private final Vector2 startingPosition;
 
+    private final float shootDelay;
+    private final float tongueDistance;
+    private final float tongueSpeed;
+    private int tongueCount;
+
     private transient State state = State.IDLE;
     private transient float stateTime = 0;
     private transient Direction direction = Direction.UP;
@@ -19,11 +24,16 @@ public class Frogger extends MovingEntity {
     private transient boolean canJump = true;
 
     private float currentJumpTime = 0;
+    private float currentShootTime = 0;
 
     public Frogger(FroggerConfiguration froggerConfiguration) {
         this.jumpDelay        = froggerConfiguration.getJumpDelay();
         this.jumpDistance     = froggerConfiguration.getJumpDistance();
         this.startingPosition = froggerConfiguration.getStartingPosition();
+        this.shootDelay       = froggerConfiguration.getShootDelay();
+        this.tongueDistance   = froggerConfiguration.getTongueDistance();
+        this.tongueCount      = froggerConfiguration.getMaxTongueCount();
+        this.tongueSpeed      = froggerConfiguration.getTongueSpeed();
     }
 
     public State getState() {return state;}
@@ -31,6 +41,26 @@ public class Frogger extends MovingEntity {
     public void setState(State state) {
         this.state = state;
         stateTime  = 0;
+    }
+
+    public boolean canShoot() {
+        return tongueCount > 0;
+    }
+
+    public int getTongueCount() {
+        return tongueCount;
+    }
+
+    public float getTongueSpeed() {
+        return tongueSpeed;
+    }
+
+    public void setTongueCount(int tongueCount) {
+        this.tongueCount = tongueCount;
+    }
+
+    public float getTongueDistance() {
+        return tongueDistance;
     }
 
     public boolean canJump() {
@@ -76,15 +106,24 @@ public class Frogger extends MovingEntity {
                 canJump = true;
             }
         }
+
+        if (currentShootTime > 0) {
+            currentShootTime -= delta;
+            // Si il est terminé, on peut re-sauter
+            if (currentShootTime <= 0) {
+                onShootEnd();
+            }
+        }
     }
 
     @Override
-    public void whenOutOfBorder(World world, float delta) {
+    public boolean whenOutOfBorder(World world, float delta) {
         position.set(
                 MathUtils.clamp(position.x, 0, world.getWidth() - getWidth()),
                 MathUtils.clamp(position.y, 0, world.getHeight() - getHeight())
         );
         onJumpEnd();
+        return false;
     }
 
     public void onJumpEnd() {
@@ -107,6 +146,18 @@ public class Frogger extends MovingEntity {
     }
 
     public void onDied() {
+    }
+
+    public void onShootStart() {
+        if (state == State.IDLE) {
+            setState(State.SHOOTING);
+            tongueCount--;
+            currentShootTime = shootDelay;
+        }
+    }
+
+    public void onShootEnd() {
+        setState(State.IDLE);
     }
 
     @Override
@@ -133,6 +184,6 @@ public class Frogger extends MovingEntity {
     }
 
     public enum State {
-        IDLE, JUMPING
+        IDLE, JUMPING, SHOOTING
     }
 }

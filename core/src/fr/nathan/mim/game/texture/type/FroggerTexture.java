@@ -29,6 +29,9 @@ public class FroggerTexture extends TextureHolder<Frogger> {
                 frogger.onJumpEnd();
             }
         }
+        else if (frogger.getState() == Frogger.State.SHOOTING) {
+            region = idle;
+        }
         else if (frogger.getState() == Frogger.State.IDLE) {
             region = idle;
         }

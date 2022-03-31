@@ -38,12 +38,8 @@ public class Refuge extends GameElement {
     }
 
     @Override
-    public boolean isVisible() {
-        return isOccupied; // On n'a rien à afficher si le refuge n'est pas occupé
-    }
-
-    @Override
-    public CollideResult onCollideWith(MovingEntity frogger, float delta) {
+    public CollideResult onCollideWith(MovingEntity entity, float delta) {
+        if (!(entity instanceof Frogger)) return CollideResult.NOTHING;
         if (isOccupied) {
             return CollideResult.BLOCK;
         }
