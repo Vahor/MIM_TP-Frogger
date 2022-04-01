@@ -54,6 +54,8 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
             worldController.onDownPressed();
         if (keycode == Input.Keys.SPACE)
             worldController.onSpacePressed();
+        if (keycode == Input.Keys.ALT_LEFT)
+            worldController.onControlPressed();
 
         if (keycode == Input.Keys.D)
             world.setDebug(!world.isDebug());
@@ -76,6 +78,8 @@ public class InputHandler implements InputProcessor, GestureDetector.GestureList
             worldController.onDownReleased();
         if (keycode == Input.Keys.SPACE)
             worldController.onSpaceReleased();
+        if (keycode == Input.Keys.ALT_LEFT)
+            worldController.onControlReleased();
         return true;
     }
 

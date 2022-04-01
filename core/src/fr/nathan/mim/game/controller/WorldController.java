@@ -34,6 +34,18 @@ public class WorldController extends Controller {
 
     public World getWorld() {return world;}
 
+    public void onControlPressed() {
+        pressedKeys.put(Keys.CONTROL, true);
+    }
+
+    public void onControlReleased() {
+        pressedKeys.put(Keys.CONTROL, false);
+    }
+
+    public boolean isControlPressed() {
+        return pressedKeys.get(Keys.CONTROL);
+    }
+
     public void onSpacePressed() {
         pressedKeys.put(Keys.SPACE, true);
     }
@@ -122,7 +134,7 @@ public class WorldController extends Controller {
             return;
         }
 
-        if (frogger.canJump()) {
+        if (!isControlPressed() && frogger.canJump()) {
             float animationDuration = ((FroggerTexture) TextureFactory.getInstance().getTextureHolder(Frogger.class)).getJumpingAnimation().getAnimationDuration();
 
             frogger.setState(Frogger.State.JUMPING);
@@ -318,6 +330,9 @@ public class WorldController extends Controller {
             }
         }
 
+
+        Frogger frogger = world.getFrogger();
+        frogger.onLevelRestart();
         if (!hasEmptyRefuge) {
             Client.getInstance().setScreen(new GameOverScreen(world, batch, true));
         }
@@ -441,7 +456,7 @@ public class WorldController extends Controller {
     }
 
     enum Keys {
-        LEFT, RIGHT, UP, DOWN, SPACE
+        LEFT, RIGHT, UP, DOWN, SPACE, CONTROL
     }
 
 }

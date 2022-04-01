@@ -16,6 +16,7 @@ public class Frogger extends MovingEntity {
     private final float tongueDistance;
     private final float tongueSpeed;
     private int tongueCount;
+    private final int maxTongueCount;
 
     private transient State state = State.IDLE;
     private transient float stateTime = 0;
@@ -33,6 +34,7 @@ public class Frogger extends MovingEntity {
         this.shootDelay       = froggerConfiguration.getShootDelay();
         this.tongueDistance   = froggerConfiguration.getTongueDistance();
         this.tongueCount      = froggerConfiguration.getMaxTongueCount();
+        this.maxTongueCount   = froggerConfiguration.getMaxTongueCount();
         this.tongueSpeed      = froggerConfiguration.getTongueSpeed();
     }
 
@@ -44,7 +46,7 @@ public class Frogger extends MovingEntity {
     }
 
     public boolean canShoot() {
-        return tongueCount > 0;
+        return tongueCount > 0 && state != State.SHOOTING;
     }
 
     public int getTongueCount() {
@@ -56,6 +58,7 @@ public class Frogger extends MovingEntity {
     }
 
     public void setTongueCount(int tongueCount) {
+        if (tongueCount > maxTongueCount) return;
         this.tongueCount = tongueCount;
     }
 
@@ -94,6 +97,11 @@ public class Frogger extends MovingEntity {
     }
 
     @Override
+    public void onLevelRestart() {
+        setTongueCount(maxTongueCount);
+    }
+
+    @Override
     public void update(float delta) {
         super.update(delta);
         stateTime += delta;
@@ -109,7 +117,7 @@ public class Frogger extends MovingEntity {
 
         if (currentShootTime > 0) {
             currentShootTime -= delta;
-            // Si il est terminé, on peut re-sauter
+            // Si il est terminé, on peut re-tirer
             if (currentShootTime <= 0) {
                 onShootEnd();
             }

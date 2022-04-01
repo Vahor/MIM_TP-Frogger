@@ -235,7 +235,7 @@ public class World implements Configurable {
                 .05f,
                 1,
                 new Vector2(width / 2 - .25f, .15f),
-                .1f,
+                .4f,
                 2f,
                 1.5f,
                 2);

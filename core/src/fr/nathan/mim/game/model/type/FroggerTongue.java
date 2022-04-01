@@ -56,6 +56,7 @@ public class FroggerTongue extends MovingEntity {
         if (element instanceof Frogger) return CollideResult.NOTHING;
         if (element instanceof FroggerTongue) return CollideResult.NOTHING;
         direction = null;
+        frogger.setTongueCount(frogger.getTongueCount() + 1);
         return CollideResult.NOTHING;
     }
 
