@@ -26,14 +26,36 @@ public class Fly extends MovingEntity {
     }
 
     public void initRandomDirection() {
-        fromPoint = new Vector2(
-                0,
-                World.SHARED_RANDOM.nextFloat() * World.instance.getHeight());
-        toPoint   = new Vector2(
-                World.instance.getWidth(),
-                World.SHARED_RANDOM.nextFloat() * World.instance.getHeight());
+        // Ajouter les cas gauche/haut et haut/droite
+        if (World.SHARED_RANDOM.nextBoolean()) {
+            // Début à gauche
+            fromPoint = new Vector2(
+                    0,
+                    (World.SHARED_RANDOM.nextFloat() * World.instance.getHeight()) - (getHeight() / 2));
+        }
+        else {
+            // Début à haut
+            fromPoint = new Vector2(
+                    World.SHARED_RANDOM.nextFloat() * World.instance.getWidth(),
+                    World.instance.getHeight() - getHeight() / 2);
+        }
+
+
+        if (World.SHARED_RANDOM.nextBoolean()) {
+            // Fin à droite
+            toPoint = new Vector2(
+                    World.instance.getWidth(),
+                    World.SHARED_RANDOM.nextFloat() * World.instance.getHeight() - getHeight() / 2);
+        }
+        else {
+            // Fin en bas
+            toPoint = new Vector2(
+                    World.SHARED_RANDOM.nextFloat() * World.instance.getWidth(),
+                    0);
+        }
 
         leftToRight = World.SHARED_RANDOM.nextBoolean();
+
         if (leftToRight)
             direction = toPoint.cpy().sub(fromPoint);
         else
@@ -59,10 +81,10 @@ public class Fly extends MovingEntity {
 
     @Override
     public void update(float delta) {
-        if(state != State.DEAD)
+        if (state != State.DEAD)
             super.update(delta);
         stateTime += delta;
-        if(state == State.DEAD && stateTime > 1){
+        if (state == State.DEAD && stateTime > 1) {
             state = State.HIDDEN;
         }
     }
@@ -128,12 +150,10 @@ public class Fly extends MovingEntity {
 
     @Override
     public CollideResult onCollideWith(MovingEntity entity, float delta) {
-        if (entity instanceof FroggerTongue) {
-            setAlive(false);
-            entity.onCollideWith(this, delta);
-            return CollideResult.EAT;
+        if (entity instanceof Frogger) {
+            return CollideResult.DEAD;
         }
-        return CollideResult.DEAD;
+        return CollideResult.NOTHING;
     }
 
     public enum State {

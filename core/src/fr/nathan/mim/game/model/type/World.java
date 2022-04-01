@@ -236,13 +236,13 @@ public class World implements Configurable {
                 1,
                 new Vector2(width / 2 - .25f, .15f),
                 .4f,
-                2f,
-                2f,
+                3f,
+                3f,
                 2);
         turtleConfiguration    = new TurtleConfiguration(3, 3f, 1, 3);
         flyConfiguration       = new FlyConfiguration(
-                3,
-                1f
+                10,
+                2f
         );
         refugeFlyConfiguration = new RefugeFlyConfiguration(2);
 

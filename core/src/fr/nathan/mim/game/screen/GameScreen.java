@@ -18,10 +18,10 @@ public class GameScreen implements Screen {
     public GameScreen(Batch batch) {
         WorldDao worldDao = new WorldDao();
         World world;
-        world = new World();
-        world.demoWorld();
-//        world = worldDao.get("config.json");
-        worldDao.save("config.json", world);
+        //world = new World();
+        //world.demoWorld();
+        world = worldDao.get("config.json");
+        //worldDao.save("config.json", world);
 
         worldRenderer   = new WorldRenderer(world, batch);
         worldController = new WorldController(world, batch);

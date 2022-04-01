@@ -16,7 +16,7 @@ import fr.nathan.mim.game.texture.TextureFactory;
 public class WorldRenderer extends Controller {
 
     // todo remplacer par JUMP_FRAME_DURATION dans le Frogger
-    public static final float FRAME_DURATION = .1f; // Temps d'affichage d'une frame, le jeu est à 60 fps, donc frame duration = x/60
+    public static final float FRAME_DURATION = .08f; // Temps d'affichage d'une frame, le jeu est à 60 fps, donc frame duration = x/60
 
     OrthographicCamera camera;
     Viewport viewport;
