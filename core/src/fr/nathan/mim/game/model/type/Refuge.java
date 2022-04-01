@@ -43,7 +43,8 @@ public class Refuge extends GameElement {
         if (isOccupied) {
             return CollideResult.BLOCK;
         }
-        isOccupied = true;
+        // Mettre à true si le refuge est occupé
+        //isOccupied = true;
         return CollideResult.WIN;
     }
 }

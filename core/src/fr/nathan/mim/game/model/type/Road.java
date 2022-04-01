@@ -80,6 +80,7 @@ public class Road implements Configurable {
     public GameElement getFirstElement() {
         GameElement result = null;
         for (GameElement element : elements) {
+            if (!element.isVisible()) continue;
             if (result == null)
                 result = element;
             else if (result.getX() > element.getX())
@@ -96,6 +97,7 @@ public class Road implements Configurable {
     public GameElement getLastElement() {
         GameElement result = null;
         for (GameElement element : elements) {
+            if (!element.isVisible()) continue;
             if (result == null)
                 result = element;
             else if (result.getX() < element.getX())

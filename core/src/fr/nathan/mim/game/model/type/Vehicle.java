@@ -7,6 +7,9 @@ public class Vehicle extends MovingEntity {
 
     private Type type;
 
+    private transient State state = State.ALIVE;
+    private transient float stateTime = 0;
+
     public Vehicle(Type type) {
         this.type = type;
     }
@@ -21,8 +24,21 @@ public class Vehicle extends MovingEntity {
         return type.width;
     }
 
+    public State getState() {
+        return state;
+    }
+
     @Override
     public CollideResult onCollideWith(MovingEntity entity, float delta) {
+        if (state != State.ALIVE)
+            return CollideResult.NOTHING;
+
+        if (entity instanceof FroggerTongue) {
+            state = State.DEAD;
+            entity.onCollideWith(this, delta);
+            return CollideResult.NOTHING;
+        }
+
         if (!(entity instanceof Frogger))
             return CollideResult.NOTHING;
 
@@ -42,6 +58,25 @@ public class Vehicle extends MovingEntity {
         return true;
     }
 
+    @Override
+    public boolean isVisible() {
+        return state != State.HIDDEN;
+    }
+
+    @Override
+    public void update(float delta) {
+        if (state != State.DEAD)
+            super.update(delta);
+
+        if (state == State.DEAD) {
+            stateTime += delta;
+
+            if (stateTime > 2) {
+                state = State.HIDDEN;
+            }
+        }
+    }
+    
     @Override
     public void afterInitialisation() {
         super.afterInitialisation();
@@ -80,5 +115,11 @@ public class Vehicle extends MovingEntity {
         public int getId() {
             return id;
         }
+    }
+
+    public enum State {
+        ALIVE,
+        DEAD,
+        HIDDEN
     }
 }

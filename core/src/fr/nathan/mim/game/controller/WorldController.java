@@ -113,7 +113,6 @@ public class WorldController extends Controller {
         if (isSpacePressed()) {
             if (frogger.canShoot()) {
                 froggerShoot();
-                return;
             }
         }
 
@@ -243,7 +242,7 @@ public class WorldController extends Controller {
 
         if (collideResult == CollideResult.EAT) {
             onFroggerEat();
-            return true;
+            return false;
         }
 
         if (collideResult == CollideResult.RIDE && element instanceof MovingEntity) {

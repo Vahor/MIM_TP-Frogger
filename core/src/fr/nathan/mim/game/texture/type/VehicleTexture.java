@@ -8,11 +8,18 @@ import fr.nathan.mim.game.texture.TextureHolder;
 public class VehicleTexture extends TextureHolder<Vehicle> {
 
     private final TextureAtlas atlas;
+    private final TextureRegion explosion;
 
-    public VehicleTexture(TextureAtlas atlas) {this.atlas = atlas;}
+    public VehicleTexture(TextureAtlas atlas, TextureRegion explosion) {
+        this.atlas     = atlas;
+        this.explosion = explosion;
+    }
 
     @Override
     public TextureRegion getTexture(Vehicle vehicle) {
+        if (vehicle.getState() == Vehicle.State.DEAD) {
+            return explosion;
+        }
         return atlas.findRegion(Integer.toString(vehicle.getType().getId()));
     }
 }

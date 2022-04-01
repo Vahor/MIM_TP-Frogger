@@ -74,12 +74,11 @@ public class RefugeFly extends MovingEntity {
 
     @Override
     public CollideResult onCollideWith(MovingEntity entity, float delta) {
-        if (entity instanceof FroggerTongue) {
-            setAlive(false);
-            entity.onCollideWith(this, delta);
+        if (entity instanceof Frogger) {
+            getPosition().set(getNextPosition());
             return CollideResult.EAT;
         }
-        return CollideResult.BLOCK;
+        return CollideResult.NOTHING;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class RefugeFly extends MovingEntity {
 
     @Override
     public void update(float delta) {
-        if(state != State.DEAD)
+        if (state != State.DEAD)
             super.update(delta);
 
         stateTime += delta;
@@ -99,7 +98,7 @@ public class RefugeFly extends MovingEntity {
         }
 
 
-        if(state == State.DEAD && stateTime > 1){
+        if (state == State.DEAD && stateTime > 1) {
             state = State.HIDDEN;
         }
     }

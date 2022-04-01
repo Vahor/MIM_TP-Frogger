@@ -237,14 +237,14 @@ public class World implements Configurable {
                 new Vector2(width / 2 - .25f, .15f),
                 .4f,
                 2f,
-                1.5f,
+                2f,
                 2);
         turtleConfiguration    = new TurtleConfiguration(3, 3f, 1, 3);
         flyConfiguration       = new FlyConfiguration(
                 3,
                 1f
         );
-        refugeFlyConfiguration = new RefugeFlyConfiguration(1);
+        refugeFlyConfiguration = new RefugeFlyConfiguration(2);
 
         refugeConfiguration = new RefugeConfiguration(new ArrayList<Vector2>(Arrays.asList(
                 new Vector2(0.3f, 12.25f),

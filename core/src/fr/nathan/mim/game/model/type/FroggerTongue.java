@@ -32,6 +32,7 @@ public class FroggerTongue extends MovingEntity {
 
         if (direction != null)
             if (distance > maxDistance) {
+                // TODO : Retirer le missile lorsqu'il est trop loin, au lieu de juste le cacher
                 direction = null;
                 frogger.setTongueCount(frogger.getTongueCount() + 1);
             }
@@ -87,12 +88,12 @@ public class FroggerTongue extends MovingEntity {
 
     @Override
     public float getWidth() {
-        return .1f;
+        return .12f;
     }
 
     @Override
     public float getHeight() {
-        return .3f;
+        return .45f;
     }
 
     @Override
