@@ -16,8 +16,8 @@ public class RefugeFly extends MovingEntity {
 
     private static final Vector2 OUT_OF_SCREEN = new Vector2(-100, -100);
 
+    private transient State state = State.ALIVE;
     private transient float stateTime = 0;
-    private boolean alive = true;
 
     public RefugeFly(RefugeFlyConfiguration flyConfiguration) {
         this.changeSpotDelay = flyConfiguration.getChangeSpotDelay();
@@ -31,8 +31,16 @@ public class RefugeFly extends MovingEntity {
         refuges.remove(refuge);
     }
 
+    public State getState() {
+        return state;
+    }
+
     public void setAlive(boolean alive) {
-        this.alive = alive;
+        stateTime = 0;
+        if (alive)
+            this.state = State.ALIVE;
+        else
+            this.state = State.DEAD;
     }
 
     @Override
@@ -46,7 +54,7 @@ public class RefugeFly extends MovingEntity {
 
     @Override
     public boolean isVisible() {
-        return alive;
+        return state != State.HIDDEN;
     }
 
     @Override
@@ -81,17 +89,24 @@ public class RefugeFly extends MovingEntity {
 
     @Override
     public void update(float delta) {
-        super.update(delta);
+        if(state != State.DEAD)
+            super.update(delta);
+
         stateTime += delta;
-        if (changeSpotDelay > 0 && stateTime > changeSpotDelay) {
+        if (state == State.ALIVE && changeSpotDelay > 0 && stateTime > changeSpotDelay) {
             getPosition().set(getNextPosition());
             stateTime = 0;
+        }
+
+
+        if(state == State.DEAD && stateTime > 1){
+            state = State.HIDDEN;
         }
     }
 
     @Override
     public void onLevelRestart() {
-        alive = true;
+        setAlive(true);
     }
 
     public Vector2 getNextPosition() {
@@ -107,5 +122,11 @@ public class RefugeFly extends MovingEntity {
         }
 
         return refuge.getPosition();
+    }
+
+    public enum State {
+        ALIVE,
+        DEAD,
+        HIDDEN
     }
 }

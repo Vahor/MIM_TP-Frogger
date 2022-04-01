@@ -33,8 +33,6 @@ public abstract class MovingEntity extends GameElement {
     public boolean whenOutOfBorder(World world, float delta) {return false;}
 
     public void updateVelocity() {
-        System.out.println("MovingEntity.updateVelocity");
-        System.out.println("Class: " + this.getClass().getName());
         float speedBoost = World.instance.getMoveSpeedBoost();
         getVelocity().set(
                 getRoad().getDirection().getMotX() * (getRoad().getMoveSpeed() + speedBoost),

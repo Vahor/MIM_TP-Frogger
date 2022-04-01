@@ -11,14 +11,14 @@ public class Fly extends MovingEntity {
     private final float delay;
     private final float moveSpeed;
 
-    private float stateTime;
-
     private Vector2 direction;
     private Vector2 fromPoint;
     private Vector2 toPoint;
 
     private boolean leftToRight = false;
-    private boolean alive = true;
+
+    private transient State state = State.ALIVE;
+    private transient float stateTime = 0;
 
     public Fly(FlyConfiguration flyConfiguration) {
         this.delay     = flyConfiguration.getDelay();
@@ -58,6 +58,16 @@ public class Fly extends MovingEntity {
     }
 
     @Override
+    public void update(float delta) {
+        if(state != State.DEAD)
+            super.update(delta);
+        stateTime += delta;
+        if(state == State.DEAD && stateTime > 1){
+            state = State.HIDDEN;
+        }
+    }
+
+    @Override
     public boolean whenOutOfBorder(World world, float delta) {
         stateTime += delta;
         if (stateTime > delay) {
@@ -70,7 +80,15 @@ public class Fly extends MovingEntity {
     }
 
     public void setAlive(boolean alive) {
-        this.alive = alive;
+        stateTime = 0;
+        if (alive)
+            this.state = State.ALIVE;
+        else
+            this.state = State.DEAD;
+    }
+
+    public State getState() {
+        return state;
     }
 
     @Override
@@ -100,12 +118,12 @@ public class Fly extends MovingEntity {
 
     @Override
     public boolean isVisible() {
-        return alive;
+        return state != State.HIDDEN;
     }
 
     @Override
     public void onLevelRestart() {
-        alive = true;
+        setAlive(true);
     }
 
     @Override
@@ -116,5 +134,11 @@ public class Fly extends MovingEntity {
             return CollideResult.EAT;
         }
         return CollideResult.DEAD;
+    }
+
+    public enum State {
+        ALIVE,
+        DEAD,
+        HIDDEN
     }
 }
